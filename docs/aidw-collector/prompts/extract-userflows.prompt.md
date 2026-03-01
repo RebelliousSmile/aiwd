@@ -47,7 +47,8 @@ Exemples de flux à rechercher :
 
 Charger `@aidw-collector/templates/userflows.md` et :
 - Remplacer le tableau des rôles avec les rôles identifiés (depuis `dest/access-matrix.md` si disponible, sinon depuis les sources)
-- Dupliquer le bloc de flux autant que nécessaire — **un bloc par tâche utilisateur**
+- Dupliquer le bloc délimité par `<!-- BLOC FLUX -->` et `<!-- FIN BLOC FLUX -->` — **un bloc par tâche utilisateur**
+- Ajouter des lignes dans le tableau des étapes selon la complexité réelle du flux (pas de limite)
 - Ordonner les flux du plus fréquent / fondamental au plus rare / avancé
 - Remplacer chaque `[À COMPLÉTER]` par les données extraites
 - Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente des sources

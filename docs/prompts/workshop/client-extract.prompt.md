@@ -22,7 +22,7 @@ Transformer des fichiers sources bruts (PDFs, captures, notes, documentation exi
   - `--update` : Mode incrémental, enrichit les fichiers existants
   - `--force` : Régénère tout même si fichiers existent
   - `--project <nom>` : Extraction au niveau projet (génère aussi dans `<client>/<projet>/.docs/`)
-  - `--from-collector` : **Mode collector** — la source est `aidw-collector/dest/` au lieu de `<client>/.docs/sources/`. Garantit que seul l'output du collector est traité. Les étapes de validation OCR et de détection de formats binaires sont ignorées (les fichiers sont déjà du markdown structuré). Les thèmes à produire sont déterminés par les fichiers présents dans `dest/` (CLIENT.md, glossaire.md, architecture.md, screens.md, access-matrix.md, deployment.md).
+  - `--from-collector` : **Mode collector** — la source est `aidw-collector/dest/` au lieu de `<client>/.docs/sources/`. Garantit que seul l'output du collector est traité. Les étapes de validation OCR et de détection de formats binaires sont ignorées (les fichiers sont déjà du markdown structuré). Les thèmes à produire sont déterminés par les fichiers présents dans `dest/` (CLIENT.md, glossaire.md, architecture.md, screens.md, userflows.md, access-matrix.md, deployment.md).
 
 ## Formats acceptés
 
@@ -35,16 +35,27 @@ Transformer des fichiers sources bruts (PDFs, captures, notes, documentation exi
 
 - **Taille max par fichier** : 250 lignes
 - **Seuil thème custom** : 50 lignes minimum de contenu unique
-- **Thèmes standard** : CLIENT.md, glossaire.md, architecture.md, requirements.md, users.md, workflows.md
-- **Thèmes optionnels** : api.md, security.md, integration.md, deployment.md, monitoring.md, data-model.md
-- **Priorité de traitement** : CLIENT.md > glossaire.md > architecture.md > requirements.md > users.md > workflows.md > autres
+- **Thèmes standard** (toujours produits si contenu disponible) : `CLIENT.md`, `glossaire.md`, `architecture.md`
+- **Thèmes conditionnels** (produits si contenu détecté dans les sources) :
+  - `screens.md` — si UI ou captures d'écran détectées
+  - `userflows.md` — si UI + sources de flux (captures annotées, notes d'usage, guides, tests)
+  - `access-matrix.md` — si gestion de rôles / permissions détectée
+  - `deployment.md` — si configuration déploiement détectée
+- **Thèmes sources brutes** (spécifiques au mode hors `--from-collector`) : `requirements.md`, `users.md`, `workflows.md`
+- **Thèmes optionnels custom** : `api.md`, `security.md`, `integration.md`, `monitoring.md`, `data-model.md`
+- **Priorité de traitement** : CLIENT.md > glossaire.md > architecture.md > screens.md > userflows.md > access-matrix.md > deployment.md > requirements.md > users.md > workflows.md > autres
 
 ## Sortie
 
 Fichiers générés dans `<client>/.docs/` :
-- `CLIENT.md` (obligatoire) - contexte client, audience, contraintes
-- `glossaire.md` (obligatoire) - termes métier et vocabulaire technique
-- `[thematique].md` (selon contenu détecté : architecture, requirements, users, workflows, etc.)
+- `CLIENT.md` (obligatoire) — contexte client, audience, contraintes
+- `glossaire.md` (obligatoire) — termes métier et vocabulaire technique
+- `architecture.md` (si contenu disponible) — stack, modules, flux de données
+- `screens.md` (si UI détectée) — inventaire des écrans
+- `userflows.md` (si UI + flux disponibles) — parcours utilisateurs, tâches
+- `access-matrix.md` (si rôles détectés) — matrice rôles et permissions
+- `deployment.md` (si déploiement détecté) — environnements, variables, CI/CD
+- `[thematique].md` (selon contenu détecté : requirements, users, workflows, etc.)
 
 **Si exécuté au niveau projet** (`<client>/<projet>/`) avec `--project` :
 - `<projet>/.docs/context.md` - contexte spécifique du projet
@@ -286,6 +297,30 @@ Charger `@aidw-collector/templates/glossaire.md` et remplacer chaque `[À COMPL�
 #### architecture.md
 
 Charger `@aidw-collector/templates/architecture.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites. Dupliquer les lignes de tableau et les blocs de composants autant que nécessaire. Ajouter `**Lignes:** [N]/250` en pied de page.
+
+#### screens.md
+
+*Produit uniquement si UI ou captures d'écran détectées dans les sources.*
+
+Charger `@aidw-collector/templates/screens.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites. Dupliquer le bloc délimité par `<!-- BLOC ÉCRAN -->` et `<!-- FIN BLOC ÉCRAN -->` pour chaque écran documenté. Si les captures ne sont pas accessibles directement, extraire les noms d'écrans et routes depuis les notes ou PDF. Ajouter `**Lignes:** [N]/250` en pied de page.
+
+#### userflows.md
+
+*Produit uniquement si UI détectée ET sources de flux disponibles (captures annotées, notes d'usage, guides utilisateur, schémas de processus).*
+
+Charger `@aidw-collector/templates/userflows.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites. Dupliquer le bloc délimité par `<!-- BLOC FLUX -->` et `<!-- FIN BLOC FLUX -->` — un bloc par tâche utilisateur identifiée. Chaque étape = une action utilisateur (verbes : Saisir, Sélectionner, Cliquer, Valider). Ne pas décrire les réponses système comme des étapes. Ajouter `**Lignes:** [N]/250` en pied de page.
+
+#### access-matrix.md
+
+*Produit uniquement si gestion de rôles ou permissions détectée dans les sources.*
+
+Charger `@aidw-collector/templates/access-matrix.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites. Ajouter une colonne par rôle identifié dans la matrice. Ajouter `**Lignes:** [N]/250` en pied de page.
+
+#### deployment.md
+
+*Produit uniquement si configuration de déploiement détectée dans les sources.*
+
+Charger `@aidw-collector/templates/deployment.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites. Supprimer les lignes d'environnements non détectés. Ne jamais inclure les valeurs des variables d'environnement. Ajouter `**Lignes:** [N]/250` en pied de page.
 
 #### requirements.md (template)
 
@@ -539,12 +574,14 @@ Fichiers générés dans <client>/.docs/ :
 ✓ CLIENT.md (95 lignes)
 ✓ glossaire.md (180 lignes)
 ✓ architecture.md (250 lignes) - synthétisé
+✓ screens.md (140 lignes)
+✓ userflows.md (160 lignes)
+✓ access-matrix.md (80 lignes)
 ✓ requirements.md (240 lignes) - synthétisé
 ✓ users.md (120 lignes)
-✓ workflows.md (85 lignes)
 ✓ INDEX.md (45 lignes)
 
-Total: 1015 lignes réparties en 7 fichiers
+Total: 1310 lignes réparties en 9 fichiers
 
 Sources traitées:
 - documentation-existante.pdf (150 pages)

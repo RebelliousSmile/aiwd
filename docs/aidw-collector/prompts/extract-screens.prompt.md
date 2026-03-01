@@ -23,7 +23,7 @@ Dans cet ordre de priorité :
 
 ## Output : `aidw-collector/dest/screens.md`
 
-Charger `@aidw-collector/templates/screens.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites des sources. Dupliquer les blocs d'écran autant que nécessaire. Pour les grandes apps (> 20 écrans), documenter le flux principal et noter `[N écrans au total — voir router]`. Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente.
+Charger `@aidw-collector/templates/screens.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites des sources. Dupliquer le bloc délimité par `<!-- BLOC ÉCRAN -->` et `<!-- FIN BLOC ÉCRAN -->` pour chaque écran documenté. Pour les grandes apps (> 20 écrans), documenter le flux principal et noter `[N écrans au total — voir router]`. Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente.
 
 ## Règles
 
