@@ -1,20 +1,20 @@
 ---
 name: brainstorm
 description: Iterer sur l'overview du projet, challenger les concepts, proposer des alternatives jusqu'a generate-toc
-argument-hint: Chemin vers le projet (ex: "zombiology/quonleurcoupelatete")
+argument-hint: Chemin vers le projet (ex: "acme-corp/api-v2")
 ---
 
 # Brainstorm
 
 ## Goal
 
-Accompagner l'utilisateur dans l'elaboration et le raffinement de son concept de projet, en challengeant les idees, proposant des alternatives, et iterant jusqu'a ce que l'overview soit suffisamment solide pour passer a la generation de la table des matieres.
+Accompagner l'utilisateur dans l'élaboration et le raffinement de son concept de document, en challengeant les idées, proposant des alternatives, et itérant jusqu'à ce que l'overview soit suffisamment solide pour passer à la génération de la table des matières.
 
-**Duree typique:** 3-8 iterations avant d'atteindre les criteres de sortie.
+**Durée typique:** 3-8 itérations avant d'atteindre les critères de sortie.
 
 **Boucle:**
 ```
-Analyser -> Challenger -> Proposer -> Valider -> Mettre a jour -> Repeter
+Analyser -> Challenger -> Proposer -> Valider -> Mettre à jour -> Répéter
 ```
 
 ## Context
@@ -28,88 +28,98 @@ Analyser -> Challenger -> Proposer -> Valider -> Mettre a jour -> Repeter
 **Si bank.yml est absent ou invalide:**
 ```
 Le projet n'a pas de fichier bank.yml valide.
-Veuillez d'abord creer la configuration du projet avec le template:
-@docs/templates/bank.yml
+Veuillez d'abord initialiser le projet avec :
+@docs/prompts/workshop/init-project.prompt.md $ARGUMENTS
 ```
 
 ### Chargement des Ressources
 
-Lire bank.yml et charger **tous** les fichiers declares:
+Lire bank.yml et charger **tous** les fichiers déclarés :
 
-1. **Overview:** Le fichier reference dans `overview`
-2. **Documentation:** Tous les fichiers references dans la section `docs`
-3. **Type de document:** Noter `document.type` pour adapter les questions (defaut: "scenario")
+1. **Overview:** Le fichier référencé dans `overview`
+2. **Client:** `docs.client` → CLIENT.md (ton, audience, contraintes)
+3. **Glossaire:** `docs.glossaire` → termes métier à respecter
+4. **Documentation projet:** Tous les fichiers dans `docs.projet`
+5. **Type de document:** Noter `document.type` pour adapter les questions (défaut: "technical-doc")
 
-Ne pas inventer de chemins. Suivre uniquement les liens presents dans bank.yml.
+Ne pas inventer de chemins. Suivre uniquement les liens présents dans bank.yml.
 
 ## Rules
 
-- Sortie en francais
-- Mode conversationnel: poser des questions, ne pas imposer
-- Challenger les idees sans les rejeter
+- Sortie en français
+- Mode conversationnel : poser des questions, ne pas imposer
+- Challenger les idées sans les rejeter
 - Proposer des alternatives, pas des remplacements
-- **Maximum 2-3 questions par iteration** (ne pas submerger l'utilisateur)
-- Mettre a jour l'overview a chaque iteration validee
+- **Maximum 2-3 questions par itération** (ne pas submerger l'utilisateur)
+- Mettre à jour l'overview à chaque itération validée
 - Ne jamais inventer de contenu sans validation utilisateur
-- MOINS C'EST PLUS: un concept clair vaut mieux que dix idees floues
-- Utiliser la documentation univers pour verifier la coherence
-- Si un sujet manque de documentation, suggerer `@research.prompt.md "<sujet>"`
+- MOINS C'EST PLUS : un périmètre clair vaut mieux que dix fonctionnalités floues
+- Utiliser CLIENT.md et glossaire.md pour vérifier la cohérence terminologique
+- Si un sujet manque de documentation, suggérer `@docs/prompts/workshop/research.prompt.md "<sujet>"`
 
-## Etapes
+## Étapes
 
-### 0. Verifier l'Existence de l'Overview
+### 0. Vérifier l'Existence de l'Overview
 
 **Si l'overview n'existe pas:**
 
 ```markdown
 Je vois que le projet n'a pas encore d'overview.
 
-Pour commencer, decris-moi ton concept en quelques phrases:
-- De quoi parle ce projet?
-- Quel est le genre/ton vise?
-- Qui sont les protagonistes?
+Pour commencer, décris-moi le document à créer en quelques phrases :
+- Quel est l'objet du document ?
+- À qui s'adresse-t-il ?
+- Quels sont les 2-3 sujets principaux à couvrir ?
 ```
 
-Apres les premieres reponses, creer un overview minimal avec cette structure:
+Après les premières réponses, créer un overview minimal avec cette structure :
 
 ```markdown
-# [Titre du projet]
+# [Titre du document]
 
 ## Pitch
-[2-3 phrases de concept]
+[2-3 phrases décrivant l'objet et la valeur du document]
 
-## Structure
-[A definir]
+## Audience Cible
+[Profil du lecteur : rôle, niveau technique, contexte d'utilisation]
 
-## Protagonistes
-[Liste initiale]
+## Périmètre
+[Ce qui est couvert / ce qui est hors périmètre]
 
-## Ton
-[Atmosphere visee]
+## Use Cases Principaux
+[Liste des 3-5 cas d'usage que le document doit couvrir]
+
+## Contraintes
+[Contraintes connues : format, longueur, terminologie imposée, audience multilingue...]
+
+## Livrables
+[Format de sortie attendu : guide, spec, API ref, SOP...]
 ```
 
-**Si l'overview existe:** Passer a l'etape 1.
+**Si l'overview existe:** Passer à l'étape 1.
 
 ### 1. Analyser l'Overview Existant
 
-Lire le fichier overview (depuis bank.yml) et identifier:
+Lire le fichier overview (depuis bank.yml) et identifier :
 
-**Elements presents:**
-- Concept central (pitch)
-- Structure narrative (actes, seances, chapitres)
-- Personnages principaux
-- Themes
-- Ton et atmosphere
+**Éléments présents :**
+- Objet du document (pitch)
+- Audience cible et niveau technique
+- Périmètre fonctionnel (inclus/exclus)
+- Use cases couverts
+- Contraintes identifiées
+- Terminologie alignée avec le glossaire client
 
-**Elements manquants ou flous:**
-- Zones d'ombre narratives
-- Motivations non explicites
-- Conflits non resolus
-- Questions sans reponse
+**Éléments manquants ou flous :**
+- Audience non définie ou trop large
+- Périmètre sans frontières claires
+- Use cases implicites mais non énoncés
+- Contradictions avec CLIENT.md (ton, terminologie)
+- Termes non définis dans le glossaire
 
 ### 2. Challenger le Concept
 
-Poser des questions pour tester la solidite du concept. Utiliser la documentation univers pour verifier la coherence.
+Poser des questions pour tester la solidité du document à construire. Utiliser CLIENT.md et glossaire.md pour vérifier la cohérence.
 
 **Format standard de question:**
 ```
@@ -118,221 +128,238 @@ Je remarque que [observation].
 - Option B: [alternative 2]
 - Option C: conserver tel quel
 
-Qu'en penses-tu?
+Qu'en penses-tu ?
 ```
 
-**Questions de fond:**
-- Pourquoi cette histoire doit-elle etre racontee?
-- Qu'est-ce qui la rend unique?
-- Quel est l'enjeu central pour les protagonistes?
+**Questions de fond :**
+- Pourquoi ce document doit-il être créé maintenant ?
+- Qu'est-ce qui le rend utile par rapport à ce qui existe déjà ?
+- Quel est le résultat attendu pour l'audience après lecture ?
 
-**Questions de coherence:**
-- Les motivations des antagonistes sont-elles credibles?
-- Les obstacles sont-ils a la hauteur des enjeux?
-- La progression est-elle logique?
+**Questions de périmètre :**
+- Quels sujets sont dans le périmètre ? Lesquels en sont explicitement exclus ?
+- Le scope est-il réaliste pour le format et la longueur visés ?
+- Y a-t-il des dépendances (autres docs, versions, APIs) à clarifier ?
 
-**Questions pratiques:**
-- Le scope est-il realiste pour le format vise?
-- Les ressources documentaires sont-elles suffisantes?
-- Y a-t-il des trous dans l'univers a combler?
+**Questions d'audience :**
+- Le lecteur est-il débutant, intermédiaire, ou expert ?
+- Lit-il le document de A à Z ou cherche-t-il une information précise ?
+- Quelle action doit-il pouvoir effectuer après lecture ?
 
-**Questions specifiques au type:**
+**Questions de cohérence :**
+- Les termes utilisés correspondent-ils au glossaire client ?
+- Le ton est-il aligné avec CLIENT.md ?
+- Y a-t-il des contradictions avec d'autres documents existants ?
 
-| Type | Questions supplementaires |
+**Questions spécifiques au type :**
+
+| Type | Questions supplémentaires |
 |------|--------------------------|
-| scenario | Role des PJ? Liberte d'action? Points de decision? |
-| novel | Point de vue narratif? Arcs emotionnels? |
-| roleplaying | Regles concernees? Exemples de jeu? |
+| `technical-doc` | Architecture concernée ? Prérequis techniques ? Environnements couverts ? |
+| `user-guide` | Parcours utilisateur ? Cas d'erreur à documenter ? Captures écran nécessaires ? |
+| `api-doc` | Endpoints prioritaires ? Authentification ? Exemples de requêtes/réponses ? |
+| `process-doc` | Acteurs impliqués ? Déclencheurs ? Exceptions et cas limites ? |
 
-**Techniques de questionnement:**
+**Techniques de questionnement :**
 
-- **"Et si...?"** - Variations radicales (Et si l'antagoniste avait raison?)
-- **"Pourquoi pas...?"** - Challenger les choix implicites (Pourquoi ce lieu?)
-- **"5 Pourquoi"** - Creuser jusqu'a la racine (Pourquoi X? -> Pourquoi Y? -> ...)
-- **"Consequences?"** - Explorer les ramifications (Que se passe-t-il si echec?)
-- **"Avocat du diable"** - Defendre le point de vue oppose pour tester la solidite
-- **Inversion** - Inverser un element pour voir ce que ca revele
+- **"Et si...?"** — Variations de périmètre (Et si on excluait ce cas d'usage ?)
+- **"Pourquoi pas...?"** — Challenger les choix implicites (Pourquoi ce format ?)
+- **"5 Pourquoi"** — Creuser jusqu'à la racine (Pourquoi couvrir X ? → Pourquoi Y ? → ...)
+- **"Conséquences?"** — Explorer les ramifications (Que se passe-t-il si le lecteur ne trouve pas l'info ?)
+- **"Avocat du diable"** — Défendre le point de vue de l'audience pour tester la clarté
+- **Inversion** — Inverser un choix pour voir ce que ça révèle (Doc courte généraliste vs. longue exhaustive)
 
-**Si lacune documentaire identifiee:**
+**Si lacune documentaire identifiée :**
 ```
-Ce sujet ([sujet]) n'est pas assez documente pour avancer.
-Je suggere: @research.prompt.md "[sujet]"
+Ce sujet ([sujet]) n'est pas assez documenté pour avancer.
+Je suggère : @docs/prompts/workshop/research.prompt.md "[sujet]"
 ```
 
-**Si contradiction avec la documentation:**
+**Si contradiction avec CLIENT.md ou le glossaire :**
 ```
-Je note que [element de l'overview] semble contredire [element de la doc].
-- Est-ce intentionnel (divergence voulue)?
-- Faut-il mettre a jour la documentation?
-- Faut-il modifier l'overview?
+Je note que [terme/concept de l'overview] semble contredire [élément de CLIENT.md / glossaire].
+- Est-ce intentionnel (divergence voulue pour ce projet) ?
+- Faut-il mettre à jour le glossaire ?
+- Faut-il modifier l'overview ?
 ```
 
 ### 3. Proposer des Alternatives
 
-Pour chaque zone floue ou probleme identifie, proposer 2-3 alternatives:
+Pour chaque zone floue ou problème identifié, proposer 2-3 alternatives :
 
 ```markdown
 ## [Sujet]
 
 **Situation actuelle:** [description]
-**Probleme potentiel:** [ce qui pourrait ne pas fonctionner]
+**Problème potentiel:** [ce qui pourrait ne pas fonctionner]
 
 **Option A - [Nom]:** [Description]
   - Avantage: [point fort]
-  - Inconvenient: [point faible]
+  - Inconvénient: [point faible]
 
 **Option B - [Nom]:** [Description]
   - Avantage: [point fort]
-  - Inconvenient: [point faible]
+  - Inconvénient: [point faible]
 
 **Option C - Conserver l'actuel:**
-  - Avantage: [pourquoi ca peut marcher]
+  - Avantage: [pourquoi ça peut marcher]
   - Risque: [ce qu'il faut surveiller]
 ```
 
-### 4. Iterer et Mettre a Jour
+### 4. Itérer et Mettre à Jour
 
-Apres chaque reponse de l'utilisateur:
+Après chaque réponse de l'utilisateur :
 
-1. Integrer les decisions dans une version mise a jour de l'overview
-2. Identifier les nouvelles questions soulevees (max 2-3)
-3. Proposer la mise a jour et demander validation:
+1. Intégrer les décisions dans une version mise à jour de l'overview
+2. Identifier les nouvelles questions soulevées (max 2-3)
+3. Proposer la mise à jour et demander validation :
 
 ```markdown
-Je vais mettre a jour l'overview avec:
+Je vais mettre à jour l'overview avec :
 
-**Ajouts:** [element 1], [element 2]
-**Modifications:** [avant] -> [apres]
-**Suppressions:** [element retire]
+**Ajouts:** [élément 1], [élément 2]
+**Modifications:** [avant] -> [après]
+**Suppressions:** [élément retiré]
 
-Confirmes-tu?
+Confirmes-tu ?
 ```
 
-4. Ecrire seulement apres validation
+4. Écrire seulement après validation
 
-**Si l'utilisateur rejette la mise a jour:**
+**Si l'utilisateur rejette la mise à jour :**
 ```
 D'accord, je ne modifie pas l'overview.
-Peux-tu preciser ce qui ne convient pas? Je reformule ma proposition.
+Peux-tu préciser ce qui ne convient pas ? Je reformule ma proposition.
 ```
 
-**Si l'utilisateur veut pivoter/recommencer:**
+**Si l'utilisateur veut pivoter/recommencer :**
 ```
-Tu veux repartir sur une nouvelle direction. Avant d'effacer l'overview actuel:
-- Veux-tu sauvegarder une copie de la version actuelle?
-- Quel est le nouveau concept de depart?
+Tu veux repartir sur une nouvelle direction. Avant de modifier l'overview actuel :
+- Veux-tu sauvegarder une copie de la version actuelle ?
+- Quel est le nouveau concept de départ ?
 ```
 
-### 5. Gerer les Fichiers de Details
+### 5. Gérer les Projets Multi-Sections
 
-**Pour les campagnes multi-scenarios** (`document.type: scenario` avec plusieurs scenarios):
-- Creer/mettre a jour `.docs/scenarios-details.md`
-- Contenu: synopsis de chaque scenario, liens narratifs, arcs transversaux
+**Pour les suites documentaires** (`document.type: technical-doc` avec plusieurs modules) :
+- Créer/mettre à jour `.docs/modules-breakdown.md`
+- Contenu : synopsis de chaque module, dépendances entre modules, ordre de lecture recommandé
 
-**Pour les recueils multi-nouvelles** (`document.type: novel` avec plusieurs nouvelles):
-- Creer/mettre a jour `.docs/novels-details.md`
-- Contenu: synopsis de chaque nouvelle, themes communs, ordre de lecture
+**Pour les guides multi-parcours** (`document.type: user-guide` avec plusieurs profils d'audience) :
+- Créer/mettre à jour `.docs/audience-map.md`
+- Contenu : description de chaque profil, sections recommandées, chemins de lecture
 
-**Structure type:**
+**Structure type :**
 ```markdown
-# [Scenarios|Nouvelles]: [Nom du projet]
+# [Modules|Audiences] : [Nom du projet]
 
 ## Vue d'Ensemble
-[Description de l'ensemble, themes communs, progression]
+[Description de l'ensemble, logique de découpage, ordre recommandé]
 
-## [Titre 1]
-**Position:** [1er, 2eme, ...]
+## [Module/Profil 1]
+**Audience:** [qui lit cette section]
 **Synopsis:** [2-3 phrases]
-**Liens:** [connexions avec les autres]
-**Enjeux specifiques:** [ce qui est propre a celui-ci]
+**Prérequis:** [ce que le lecteur doit déjà savoir]
+**Liens:** [connexions avec les autres modules]
 
-## [Titre 2]
+## [Module/Profil 2]
 ...
 
-## Arcs Transversaux
-- [Arc 1]: [description, progression a travers les episodes]
-- [Arc 2]: ...
+## Dépendances Transversales
+- [Concept A] : [utilisé dans les sections X, Y, Z — définir en section X]
+- [Concept B] : ...
 ```
 
-### 6. Verifier la Completude
+### 6. Vérifier la Complétude
 
-Avant de passer a generate-toc, verifier que l'overview contient:
+Avant de passer à generate-toc, vérifier que l'overview contient :
 
-**Obligatoire (tous types):**
-- [ ] Concept clair en 2-3 phrases (pitch)
-- [ ] Structure narrative (debut, milieu, fin)
-- [ ] Protagonistes identifies avec motivations
-- [ ] Antagonistes/obstacles identifies
-- [ ] Enjeux clairs
-- [ ] Ton et atmosphere definis
+**Obligatoire (tous types) :**
+- [ ] Objet du document en 2-3 phrases (pitch)
+- [ ] Audience cible définie (rôle, niveau technique)
+- [ ] Périmètre fonctionnel (inclus + exclus explicitement)
+- [ ] Use cases principaux listés (3-5 minimum)
+- [ ] Contraintes identifiées (format, longueur, terminologie)
+- [ ] Alignement terminologique avec glossaire.md vérifié
 
-**Selon document.type:**
+**Selon document.type :**
 
-| Type | Elements supplementaires |
+| Type | Éléments supplémentaires |
 |------|-------------------------|
-| scenario | Role des PJ, liberte d'action, points de decision |
-| novel | Point de vue, arcs emotionnels, denouement |
-| roleplaying | Regles applicables, exemples, conseils MJ |
+| `technical-doc` | Prérequis techniques, environnements, architecture concernée |
+| `user-guide` | Parcours utilisateur, cas d'erreur, captures écran prévues |
+| `api-doc` | Liste des endpoints, format auth, exemples requêtes/réponses |
+| `process-doc` | Acteurs, déclencheurs, exceptions et cas limites, KPIs |
 
-**Recommande:**
-- [ ] Themes explores
-- [ ] Arcs de personnages esquisses
-- [ ] Points de bascule identifies
+**Recommandé :**
+- [ ] Ordre de lecture suggéré
+- [ ] Documents connexes identifiés
+- [ ] Points de complexité ou risques documentaires signalés
 
-**Critere de sortie:**
-Proposer generate-toc quand:
-- Tous les elements obligatoires sont presents
+**Critère de sortie :**
+Proposer generate-toc quand :
+- Tous les éléments obligatoires sont présents
 - L'utilisateur n'a plus de questions majeures
-- Les 2-3 dernieres iterations n'ont apporte que des ajustements mineurs
+- Les 2-3 dernières itérations n'ont apporté que des ajustements mineurs
 
 ### 7. Valider et Transitionner
 
-Quand l'overview est complet:
+Quand l'overview est complet :
 
 ```markdown
-## Resume du Concept
+## Résumé du Document
 
 [Pitch final en 3-5 phrases]
 
-## Elements Valides
+## Éléments Validés
 
-- Concept: OK | Structure: OK | Personnages: OK | Enjeux: OK | Ton: OK
+- Pitch: OK | Audience: OK | Périmètre: OK | Use cases: OK | Contraintes: OK
 
-## Pret pour la Suite
+## Prêt pour la Suite
 
 L'overview est suffisamment solide.
 
-Prochaine etape: `@generate-toc.prompt.md $ARGUMENTS`
+Prochaine étape : `@docs/prompts/workshop/generate-toc.prompt.md $ARGUMENTS`
 ```
 
 ## Exemple de Dialogue
 
 ```
-CLAUDE: Je remarque que le scenario se deroule pendant la Revolution mais
-        la documentation sur le vaudou haitien est absente.
-        Le lien avec Saint-Domingue necessite ces informations.
-        Je suggere: @research.prompt.md "vaudou haitien ceremonie Bois-Caiman"
+CLAUDE: Je lis l'overview : le guide couvre l'API REST d'authentification.
+        Mais l'audience n'est pas définie.
+        - Option A: Développeurs backend intégrant l'API (niveau intermédiaire)
+        - Option B: Développeurs fullstack incluant les aspects frontend (OAuth flows)
+        - Option C: Laisser ouvert (les deux profils)
+        Qu'en penses-tu ?
 
-USER:   Bonne idee, fais la recherche.
+USER:   Option A, on cible le backend uniquement.
 
-[... apres research ...]
-
-CLAUDE: La recherche a enrichi la documentation. Je peux maintenant challenger:
-        Le scenario mentionne "les PJ decouvrent la verite" mais cette
-        verite n'est pas definie.
-        - Option A: La verite est un complot politique lie aux Jacobins
-        - Option B: La verite est une malediction vaudou ramenee de Saint-Domingue
-        - Option C: Laisser volontairement flou pour l'instant
-        Qu'en penses-tu?
-
-USER:   Option B, ca melange bien les deux contextes historiques.
-
-CLAUDE: Je vais mettre a jour l'overview avec:
-        **Ajouts:** La verite = malediction vaudou originaire de Saint-Domingue
-        Confirmes-tu?
+CLAUDE: Je vais mettre à jour l'overview avec :
+        **Ajouts:** Audience = développeurs backend, niveau intermédiaire
+        **Suppressions:** mention "OAuth flows frontend"
+        Confirmes-tu ?
 
 USER:   Oui.
 
-CLAUDE: [Met a jour l'overview]
-        Nouvelle question: qui a ramene cette malediction en France?
+CLAUDE: [Met à jour l'overview]
+        Nouvelle question : le guide doit-il couvrir l'authentification par clé API
+        en plus de JWT, ou uniquement JWT ?
+        - Option A: JWT uniquement (plus simple, cohérent avec le glossaire client)
+        - Option B: JWT + clé API (plus exhaustif, mais périmètre plus large)
+        - Option C: JWT principal + section courte sur clé API (en annexe)
+
+USER:   Option A, JWT uniquement pour cette version.
+
+CLAUDE: Je vais mettre à jour l'overview avec :
+        **Ajouts:** Périmètre = authentification JWT uniquement ; clé API hors périmètre v1
+        Confirmes-tu ?
+
+USER:   Oui.
+
+CLAUDE: [Met à jour l'overview]
+        L'overview couvre maintenant : pitch, audience backend, périmètre JWT,
+        use cases (login, refresh, logout, token introspection).
+        Tous les éléments obligatoires sont présents.
+
+        Prochaine étape : @docs/prompts/workshop/generate-toc.prompt.md acme-corp/api-auth-guide
 ```
