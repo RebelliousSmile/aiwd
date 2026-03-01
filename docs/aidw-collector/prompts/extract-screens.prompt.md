@@ -21,9 +21,17 @@ Dans cet ordre de priorité :
 5. **Formulaires et validations**
 6. **Templates HTML / JSX / Vue**
 
-## Output : `aidw-collector/dest/screens.md`
+## Output : `aidw-collector/dest/screens-[module].md`
 
-Charger `@aidw-collector/templates/screens.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites des sources. Dupliquer le bloc délimité par `<!-- BLOC ÉCRAN -->` et `<!-- FIN BLOC ÉCRAN -->` pour chaque écran documenté. Pour les grandes apps (> 20 écrans), documenter le flux principal et noter `[N écrans au total — voir router]`. Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente.
+Charger `@aidw-collector/templates/screens.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites des sources. Dupliquer le bloc délimité par `<!-- BLOC ÉCRAN -->` et `<!-- FIN BLOC ÉCRAN -->` pour chaque écran documenté.
+
+**Règle de split :** si l'application a plus de 20 écrans OU si un fichier dépasserait 250 lignes, produire plusieurs fichiers thématiques. Exemples de découpe naturelle :
+- `screens-public.md` (écrans sans authentification)
+- `screens-auth.md` (formulaires de connexion, profil, mot de passe)
+- `screens-admin.md` (back-office, tableau de bord, gestion)
+- `screens-[domaine].md` (nom du module fonctionnel)
+
+Chaque fichier inclut une **Vue d'Ensemble** (tableau récapitulatif de ses écrans) + les blocs ÉCRAN détaillés. Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente.
 
 ## Règles
 

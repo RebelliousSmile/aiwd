@@ -13,18 +13,22 @@ Kit à copier dans un projet cible pour extraire toute l'information nécessaire
 | `CLIENT.md` | Contexte, audience, ton, contraintes | Toujours |
 | `glossaire.md` | Vocabulaire technique extrait du code | Toujours |
 | `architecture.md` | Stack, modules, flux de données | Toujours |
-| `screens.md` | Inventaire des écrans (champs, actions, messages) | Si UI détectée |
-| `userflows.md` | Parcours utilisateurs — tâches cross-écrans, erreurs | Si UI détectée |
+| `screens-[module].md` | Inventaire des écrans (champs, actions, messages) — 1 fichier par module | Si UI détectée |
+| `userflows-[groupe].md` | Parcours utilisateurs — tâches cross-écrans, erreurs — 1 fichier par groupe | Si UI détectée |
 | `access-matrix.md` | Matrice rôles × fonctionnalités | Si auth/rôles détectés |
 | `deployment.md` | Environnements, variables, CI/CD, procédure | Si config déploiement détectée |
+| `requirements.md` | Spécifications fonctionnelles, features, use cases, règles métier | Si specs détectées |
+| `[theme-custom].md` | Domaines fonctionnels majeurs hors standards (multi-tenant, QR system…) | Si défini dans collect.yml |
 | `INSTALL.md` | Commandes de copie + tableau des gaps | Toujours |
+
+> **Règle de split :** screens et userflows sont automatiquement découpés en plusieurs fichiers si l'application a plus de 20 écrans ou 8 flux. Chaque fichier reste sous 250 lignes.
 
 ## Architecture interne
 
 ```
 docs/aidw-collector/
 ├── aidw-collector.md          ← orchestrateur (POINT D'ENTRÉE)
-├── collect.yml                ← hints optionnels (surcharge auto-détection)
+├── collect.yml                ← hints optionnels (surcharge auto-détection + thèmes custom)
 ├── README.md                  ← ce fichier
 ├── dest/                      ← fichiers produits (output)
 ├── templates/                 ← squelettes avec [À COMPLÉTER]
@@ -34,7 +38,8 @@ docs/aidw-collector/
 │   ├── screens.md
 │   ├── userflows.md
 │   ├── access-matrix.md
-│   └── deployment.md
+│   ├── deployment.md
+│   └── requirements.md
 └── prompts/
     ├── extract-client.prompt.md
     ├── extract-glossaire.prompt.md
@@ -42,7 +47,8 @@ docs/aidw-collector/
     ├── extract-screens.prompt.md
     ├── extract-userflows.prompt.md
     ├── extract-access.prompt.md
-    └── extract-deployment.prompt.md
+    ├── extract-deployment.prompt.md
+    └── extract-requirements.prompt.md
 ```
 
 Chaque extracteur charge son template depuis `templates/` et remplace les `[À COMPLÉTER]` avec les données extraites du projet.

@@ -22,7 +22,12 @@ Dans cet ordre de priorité :
 3. **Tests d'intégration nommés métier** (si e2e absents) — `*.spec.ts`, `*_test.py` avec des noms de scénario ("should allow user to...", "when user does...")
 4. **Fichiers de user stories** (`user-stories/`, `stories/`, `docs/stories/`, issues exportées)
 5. **README** — sections "Getting Started", "How to use", "Usage", "Tutoriel"
-6. **`dest/screens.md`** si déjà produit — pour connaître les noms d'écrans et routes, et reconstituer les enchaînements
+6. **`dest/screens-*.md`** si déjà produit — pour connaître les noms d'écrans et routes, et reconstituer les enchaînements
+7. **Fallback (si aucune des sources précédentes n'est disponible)** — lire dans cet ordre :
+   - `dest/requirements.md` si disponible — les use cases révèlent des flux implicites
+   - Fichiers de processus métier (`docs/functional/`, `memory-bank/functional/`, `business-processes.md`)
+   - Fichiers de personas / utilisateurs (`users.md`, `personas.md`) — parcours utilisateurs décrits
+   - Routes + vues UI — reconstituer les flux depuis l'enchaînement routes + controllers (dernier recours)
 
 ## Ce qu'il faut extraire
 
@@ -43,7 +48,7 @@ Exemples de flux à rechercher :
 - Flux purement techniques (migrations, scripts admin)
 - Comportements de composants isolés (clic sur un bouton sans contexte)
 
-## Output : `aidw-collector/dest/userflows.md`
+## Output : `aidw-collector/dest/userflows-[groupe].md`
 
 Charger `@aidw-collector/templates/userflows.md` et :
 - Remplacer le tableau des rôles avec les rôles identifiés (depuis `dest/access-matrix.md` si disponible, sinon depuis les sources)
@@ -52,6 +57,13 @@ Charger `@aidw-collector/templates/userflows.md` et :
 - Ordonner les flux du plus fréquent / fondamental au plus rare / avancé
 - Remplacer chaque `[À COMPLÉTER]` par les données extraites
 - Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente des sources
+
+**Règle de split :** si l'application a plus de 8 flux utilisateurs OU si un fichier dépasserait 250 lignes, produire plusieurs fichiers thématiques. Exemples de découpe naturelle :
+- `userflows-client.md` (flux des utilisateurs finaux : consultation, sélection, partage)
+- `userflows-admin.md` (flux d'administration : gestion, import, configuration)
+- `userflows-[rôle].md` (nommé par rôle si les flux sont clairement segmentés par rôle)
+
+Chaque fichier inclut le **tableau des rôles** en en-tête + les blocs FLUX correspondants.
 
 ## Règles
 

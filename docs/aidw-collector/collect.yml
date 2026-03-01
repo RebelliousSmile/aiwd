@@ -22,3 +22,19 @@ scope:
   # screens: false         # Forcer skip même si UI détectée
   # access: false          # Forcer skip même si auth détectée
   # deployment: false      # Forcer skip même si config déploiement détectée
+  # requirements: false    # Forcer skip même si specs fonctionnelles détectées
+
+  # Forcer l'activation d'un extracteur même si non auto-détecté
+  # requirements: true     # Forcer l'extraction des specs (utile si docs/functional/ existe)
+
+custom_themes:
+  # Thèmes supplémentaires hors extracteurs standards.
+  # Chaque thème produit un fichier dest/[slug].md
+  # Utiliser uniquement pour des domaines fonctionnels majeurs sans correspondance dans les 8 extracteurs.
+  # Exemple :
+  # - slug: "multi-tenant"
+  #   description: "Architecture multi-tenant, isolation données, ExecutionContext"
+  #   sources: ["docs/multi-tenant-guide.md", "src/services/DatabaseService.js"]
+  # - slug: "qr-system"
+  #   description: "Système QR codes, génération, workflows d'impression"
+  #   sources: ["docs/memory-bank/guides/", "src/services/QRService.js"]
