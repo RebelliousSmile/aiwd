@@ -1,0 +1,9 @@
+# .gitignore — auto/methode
+
+# Fichiers générés (ICML, InDesign, images)
+output/*.icml
+output/ascii-images/
+output/indesign/
+
+# Garder les releases PDF versionnés
+!output/releases/

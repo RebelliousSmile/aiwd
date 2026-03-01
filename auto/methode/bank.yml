@@ -1,0 +1,29 @@
+---
+document:
+  name: "Méthode generationPDF"
+  client: "auto"
+  type: "process-doc"
+
+output-style:
+  global: "auto/.output-styles/process-documentation.md"
+
+docs:
+  client: "auto/.docs/CLIENT.md"
+  glossaire: "auto/.docs/glossaire.md"
+
+toc:
+  fichier: ".toc/INDEX.md"
+
+personas:
+  global:
+    - "docs/templates/personas/clarity-expert.yml"
+    - "docs/templates/personas/compliance-checker.yml"
+  client: []
+  projet: []
+
+overview: "overview.md"
+
+icml:
+  chapitres-source: "chapitres/"
+  chapitres-order: []
+  output: "output/methode-generationpdf.icml"
