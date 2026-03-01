@@ -1,7 +1,7 @@
 ---
 name: client-extract
 description: Extrait et organise les informations client/projet depuis des sources brutes vers des fichiers thématiques structurés pour documentation technique.
-argument-hint: "<client> [--update] [--force] [--project <nom>] (ex: cerascan --update)"
+argument-hint: "<client> [--update] [--force] [--project <nom>] [--from-collector] (ex: cerascan --from-collector)"
 ---
 
 # Client Extract
@@ -17,11 +17,12 @@ Transformer des fichiers sources bruts (PDFs, captures, notes, documentation exi
 `$ARGUMENTS` — format : `<client> [options]`
 
 - **Client cible** : premier token (identifiant : ex: cerascan, acme-corp, client-x)
-- **Dossier sources** : `<client>/.docs/sources/` (chemin déduit automatiquement)
+- **Dossier sources** : `<client>/.docs/sources/` (chemin déduit automatiquement) — **ou** `aidw-collector/dest/` si `--from-collector`
 - **Options** :
   - `--update` : Mode incrémental, enrichit les fichiers existants
   - `--force` : Régénère tout même si fichiers existent
   - `--project <nom>` : Extraction au niveau projet (génère aussi dans `<client>/<projet>/.docs/`)
+  - `--from-collector` : **Mode collector** — la source est `aidw-collector/dest/` au lieu de `<client>/.docs/sources/`. Garantit que seul l'output du collector est traité. Les étapes de validation OCR et de détection de formats binaires sont ignorées (les fichiers sont déjà du markdown structuré). Les thèmes à produire sont déterminés par les fichiers présents dans `dest/` (CLIENT.md, glossaire.md, architecture.md, screens.md, access-matrix.md, deployment.md).
 
 ## Formats acceptés
 
