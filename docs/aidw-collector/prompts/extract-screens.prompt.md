@@ -1,69 +1,77 @@
 ---
 name: extract-screens
 description: Inventorie tous les écrans/pages d'une application UI et produit screens.md. Lancé uniquement si une UI a été détectée.
-version: 1.0
+version: 1.1
 ---
 
 # Extract Screens
 
-À partir de l'inventaire partagé par `aidw-collector` et des fichiers du projet, produis `aidw-collector/dest/screens.md`.
+À partir du contexte d'inventaire partagé par `aidw-collector` (Step 0) et des fichiers du projet, produis `aidw-collector/dest/screens.md`.
 
-> **Prérequis :** ce prompt est lancé uniquement si `aidw-collector` a détecté une UI (composants, pages, views, templates).
+> **Prérequis :** lancé uniquement si `aidw-collector` a détecté une UI. Utiliser les patterns trouvés en Step 0 comme point de départ pour localiser les dossiers de pages/views.
 
 ## Sources à lire
 
-1. Fichiers de routes / navigation (`router.ts`, `urls.py`, `routes.js`, `App.tsx`…)
-2. Fichiers de pages / views / composants de haut niveau
-3. Templates HTML / JSX / Vue
-4. Fichiers de traductions (labels, messages, erreurs — `i18n/`, `locales/`, `messages.py`…)
-5. Formulaires et validations
-6. Tests end-to-end (révèlent les flux utilisateur)
+Dans cet ordre de priorité :
 
-## Ce qu'il faut extraire — par écran
-
-```
-Écran : [Nom lisible]
-Route : [URL / chemin]
-Accès : [public | authentifié | rôle(s) requis]
-Description : [à quoi sert cet écran — 2 lignes max]
-
-Éléments visibles :
-  - [champ / bouton / tableau / formulaire]
-  - [comportement associé si connu]
-
-Actions disponibles :
-  - [action] → [résultat / redirection / message]
-
-Messages système :
-  - Succès : [message depuis i18n ou code]
-  - Erreur : [message depuis i18n ou code]
-
-Notes :
-  - [comportement conditionnel, validation, cas limite]
-```
-
-Grouper les écrans par **module fonctionnel**.
+1. **Tests end-to-end** — révèlent les flux utilisateur réels (`cypress/`, `playwright/`, `e2e/`)
+2. **Fichiers de routes / navigation** (`router.ts`, `urls.py`, `routes.js`, `App.tsx`…)
+3. **Fichiers de pages / views / composants de haut niveau**
+4. **Fichiers i18n** — labels, messages, erreurs (`i18n/`, `locales/`, `messages.py`…)
+5. **Formulaires et validations**
+6. **Templates HTML / JSX / Vue**
 
 ## Output : `aidw-collector/dest/screens.md`
 
 ```markdown
 # Inventaire des Écrans — [Nom Projet]
 
+## Vue d'Ensemble
+
+{tableau sommaire avant les fiches détaillées — une ligne par écran}
+
+| Module | Écran | Route | Accès |
+|--------|-------|-------|-------|
+| [module] | [nom écran] | [URL] | [public | rôle(s)] |
+
+## Composants Partagés
+
+{navigation, sidebar, header, footer — éléments présents sur plusieurs écrans}
+
+- **[Composant]** : [description, écrans concernés]
+
+---
+
 ## Module : [Nom]
 
 ### [Nom de l'écran]
-- **Route :** [URL]
-- **Accès :** [public | rôle(s)]
-- **Description :** [2 lignes]
-- **Éléments :** [liste]
-- **Actions :** [action → résultat]
-- **Messages :** [succès / erreur]
-- **Notes :** [comportements conditionnels]
+
+- **Route :** [URL — sinon À COMPLÉTER]
+- **Accès :** [public | authentifié | rôle(s) — si extrait-access disponible, utiliser ses données]
+- **Description :** [à quoi sert cet écran — 2 lignes max]
+
+**Éléments visibles :**
+- [champ / bouton / tableau / formulaire]
+- [comportement associé si connu]
+
+**Actions disponibles :**
+- [action] → [résultat / redirection / message]
+
+**Messages système :**
+- Succès : [depuis i18n ou code — sinon À COMPLÉTER]
+- Erreur : [depuis i18n ou code — sinon À COMPLÉTER]
+
+**Notes :** [comportement conditionnel, validation, cas limite — sinon omettre]
+
+---
+**Sources :** [liste des fichiers lus]
+**Màj :** YYYY-MM-DD
 ```
 
 ## Règles
 
-- **Exhaustif** : chaque écran documenté ici permet d'écrire un guide utilisateur sans retourner au code
-- Si les messages i18n ne sont pas trouvés → `[À COMPLÉTER — libellé non trouvé]`
-- Si les rôles d'accès ne sont pas explicites → noter `[À COMPLÉTER]` et signaler dans INSTALL.md
-- Ne pas documenter les composants réutilisables (boutons, modals génériques) — uniquement les écrans/pages complets
+1. **Exhaustif** : chaque écran documenté ici permet d'écrire un guide utilisateur sans retourner au code
+2. **Grandes apps** : si > 20 écrans, prioriser les écrans du flux principal (onboarding, actions clés, erreurs critiques) et noter `[N écrans au total — voir router]`
+3. **Accès** : si `dest/access-matrix.md` est disponible, reprendre les rôles depuis ce fichier plutôt que de réinférer
+4. **Pas de composants atomiques** : ne pas documenter les boutons, modals, inputs génériques — uniquement les écrans/pages complets
+5. **Ne jamais inventer** — information absente → `[À COMPLÉTER]`
