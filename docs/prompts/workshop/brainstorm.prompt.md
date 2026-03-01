@@ -117,6 +117,8 @@ Lire le fichier overview (depuis bank.yml) et identifier :
 - Contradictions avec CLIENT.md (ton, terminologie)
 - Termes non définis dans le glossaire
 
+**Fast-track :** Si tous les critères obligatoires du step 6 sont déjà présents → sauter steps 2-5, passer directement au step 7.
+
 ### 2. Challenger le Concept
 
 Poser des questions pour tester la solidité du document à construire. Utiliser CLIENT.md et glossaire.md pour vérifier la cohérence.
@@ -162,12 +164,15 @@ Qu'en penses-tu ?
 
 **Techniques de questionnement :**
 
+Phase **Exploration** (début de session — périmètre flou) :
 - **"Et si...?"** — Variations de périmètre (Et si on excluait ce cas d'usage ?)
 - **"Pourquoi pas...?"** — Challenger les choix implicites (Pourquoi ce format ?)
+- **Inversion** — Inverser un choix pour voir ce que ça révèle (Doc courte généraliste vs. longue exhaustive)
+
+Phase **Approfondissement** (problème identifié — creuser une zone floue) :
 - **"5 Pourquoi"** — Creuser jusqu'à la racine (Pourquoi couvrir X ? → Pourquoi Y ? → ...)
 - **"Conséquences?"** — Explorer les ramifications (Que se passe-t-il si le lecteur ne trouve pas l'info ?)
 - **"Avocat du diable"** — Défendre le point de vue de l'audience pour tester la clarté
-- **Inversion** — Inverser un choix pour voir ce que ça révèle (Doc courte généraliste vs. longue exhaustive)
 
 **Si lacune documentaire identifiée :**
 ```
@@ -211,7 +216,7 @@ Pour chaque zone floue ou problème identifié, proposer 2-3 alternatives :
 Après chaque réponse de l'utilisateur :
 
 1. Intégrer les décisions dans une version mise à jour de l'overview
-2. Identifier les nouvelles questions soulevées (max 2-3)
+2. Identifier les nouvelles questions soulevées **(max 2-3 — ne pas submerger)**
 3. Proposer la mise à jour et demander validation :
 
 ```markdown
@@ -241,13 +246,10 @@ Tu veux repartir sur une nouvelle direction. Avant de modifier l'overview actuel
 
 ### 5. Gérer les Projets Multi-Sections
 
-**Pour les suites documentaires** (`document.type: technical-doc` avec plusieurs modules) :
-- Créer/mettre à jour `.docs/modules-breakdown.md`
-- Contenu : synopsis de chaque module, dépendances entre modules, ordre de lecture recommandé
+**Si le projet comporte plusieurs modules, ressources, processus ou profils d'audience distincts** (tous types) :
 
-**Pour les guides multi-parcours** (`document.type: user-guide` avec plusieurs profils d'audience) :
-- Créer/mettre à jour `.docs/audience-map.md`
-- Contenu : description de chaque profil, sections recommandées, chemins de lecture
+- Pour les suites documentaires et docs API multi-ressources → créer/mettre à jour `.docs/modules-breakdown.md`
+- Pour les guides multi-parcours et process multi-acteurs → créer/mettre à jour `.docs/audience-map.md`
 
 **Structure type :**
 ```markdown
@@ -281,6 +283,7 @@ Avant de passer à generate-toc, vérifier que l'overview contient :
 - [ ] Use cases principaux listés (3-5 minimum)
 - [ ] Contraintes identifiées (format, longueur, terminologie)
 - [ ] Alignement terminologique avec glossaire.md vérifié
+- [ ] Format de livrable défini (guide, spec, API ref, SOP...)
 
 **Selon document.type :**
 
@@ -318,6 +321,8 @@ Quand l'overview est complet :
 ## Prêt pour la Suite
 
 L'overview est suffisamment solide.
+
+**Si `document.name` ou `document.type` ont évolué pendant le brainstorm → mettre à jour bank.yml avant de continuer.**
 
 Prochaine étape : `@docs/prompts/workshop/generate-toc.prompt.md $ARGUMENTS`
 ```
