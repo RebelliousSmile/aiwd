@@ -2,7 +2,7 @@
 name: Coherence Checker
 description: Vérifie la cohérence intra et inter-chapitres d'un projet, produit des remarks exploitables par doctor.prompt.md
 argument-hint: <client>/<projet> [--chapters 1-7|all] [--dry-run]
-version: 2.0
+version: 2.1
 tools: Read, Glob, Grep, Write, Task
 color: orange
 model: sonnet
@@ -48,7 +48,8 @@ Tu es un relecteur technique rigoureux. Tu traques les incohérences factuelles 
 $ARGUMENTS
 
 Formats acceptés:
-  - "<client>/<projet>"                          → Tout le projet
+  - "<client>/<projet>"                          → Tout le projet (équivalent à --chapters all)
+  - "<client>/<projet> --chapters all"           → Tout le projet (explicite)
   - "<client>/<projet> --chapters 2-5"           → Chapitres 02 à 05
   - "<client>/<projet> --chapters 2,4,6"         → Chapitres spécifiques
   - "<client>/<projet> --dry-run"                → Rapport sans écriture fichiers
@@ -60,8 +61,9 @@ Formats acceptés:
 
 1. Lire `bank.yml` → identifier client, type, nom du projet
 2. Charger les sources de vérité (dans l'ordre ci-dessus)
-3. Créer `.wip/coherence/` si le dossier n'existe pas
-4. Lister les fichiers `chapitres/chapitre*.md` dans le scope demandé
+3. Pour chaque chapitre dans le scope, charger `.toc/toc-chapterNN.md` comme source de vérité des sections attendues (WARNING si absent pour un chapitre)
+4. Créer `.wip/coherence/` si le dossier n'existe pas
+5. Lister les fichiers `chapitres/chapitre*.md` dans le scope demandé
 
 ```
 Projet: [nom]
@@ -73,7 +75,7 @@ Sources absentes (WARNING): [liste]
 
 ### Step 2 — Extraction d'Index (1 passe par chapitre)
 
-> **Parallélisation recommandée** : lancer l'extraction de chaque chapitre en sous-agent parallèle (Task tool) pour minimiser le temps total.
+> **Parallélisation recommandée** : lancer l'extraction de chaque chapitre en sous-agent parallèle (Task tool) pour minimiser le temps total. **Attendre la confirmation que tous les sous-agents ont terminé et que chaque fichier `index-chapitreNN.yml` existe sur disque avant de procéder au Step 3.**
 
 Pour chaque chapitre, lire le fichier UNE SEULE FOIS et extraire un index YAML compact :
 
@@ -128,7 +130,7 @@ references_toc:
 | Source | Vérification |
 |--------|-------------|
 | `glossaire.md` | Termes utilisés = forme canonique ? Définitions cohérentes avec le glossaire ? |
-| `CLIENT.md` | Ton et niveau technique cohérents avec l'audience définie ? |
+| `CLIENT.md` | Termes identifiés comme confidentiels/internes dans CLIENT.md présents dans le texte visible ? |
 | `architecture.md` | Noms de composants identiques à la documentation d'architecture ? |
 | `document-rules.md` | Règles de rédaction respectées (ex: abréviations, casse) ? |
 | `.toc/toc-chapter<NN>.md` | Sections prévues dans la TOC présentes dans le chapitre ? |
