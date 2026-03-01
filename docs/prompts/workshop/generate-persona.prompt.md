@@ -59,20 +59,19 @@ persona:
   name: "<Display Name>"
   description: "<who this reader is, 1-2 sentences>"
   
-  # Optional: connaissances système/univers
+  # Optional: connaissances système/client
   background:
     system_knowledge:
       <system>: "aucune|bonne|vétéran"  # Ex: adrenaline, dnd, brp
-    <univers>_knowledge: "aucune|fan|expert"  # Ex: wot_knowledge
-    <univers>_rules_knowledge: "aucune"  # NE CONNAÎT PAS règles adaptées (contenu à évaluer)
+    <client>_knowledge: "aucune|utilisateur|expert"  # Ex: acme_knowledge
+    <client>_docs_knowledge: "aucune"  # NE CONNAÎT PAS les docs à évaluer
     
     # Smart loading depuis bank.yml (v2.0)
     reference_documents:
       loading_strategy: "from_bank_yml"  # OU liste statique (legacy)
       sources:
-        rules_vanilla: "bank.yml > rules-files.systeme"  # Règles système vanilla
-        univers_docs: "bank.yml > docs.*"  # Documentation univers
-        univers_sources: "<univers>/.docs/sources/"  # PDFs extraits
+        client_docs: "bank.yml > docs.*"  # Documentation client (CLIENT.md, glossaire, architecture)
+        client_sources: "<client>/.docs/sources/"  # PDFs extraits
       exclusions:
         - "*.docs/document-rules.md"  # Règles spécifiques = contenu à évaluer
         - "*.docs/scenarios-details.md"
@@ -192,7 +191,7 @@ Generate a production-ready persona definition that accurately models a specific
 
 1. **Analyze request** → Understand the target reader type
 2. **Research context** → Check universe/genre if specified
-   - Look for existing personas in `docs/templates/personas/` or `<univers>/.templates/personas/`
+   - Look for existing personas in `docs/templates/personas/` or `<client>/.templates/personas/`
 3. **Define psychology** → Reading style, patience, expertise level
 3b. **Define patience profile** → Tolérance au contenu non-exploitable
    - Un MJ vétéran commence bas et descend vite (baseline low, decay steep)
@@ -216,8 +215,8 @@ Generate a production-ready persona definition that accurately models a specific
 | Scope | Location | When to Use |
 |-------|----------|-------------|
 | Global | `docs/templates/personas/` | Universal reader type (casual, editor) |
-| Universe | `<univers>/.templates/personas/` | Genre/universe-specific (fan-canonique) |
-| Project | `<univers>/<projet>/.templates/personas/` | Project-specific beta reader |
+| Client | `<client>/.templates/personas/` | Genre/client-specific |
+| Project | `<client>/<projet>/.templates/personas/` | Project-specific beta reader |
 
 ## Examples
 
@@ -457,11 +456,11 @@ Save persona to appropriate location based on scope:
 # Global
 docs/templates/personas/<id>.yml
 
-# Universe
-<univers>/.templates/personas/<id>.yml
+# Client
+<client>/.templates/personas/<id>.yml
 
 # Project
-<univers>/<projet>/.templates/personas/<id>.yml
+<client>/<projet>/.templates/personas/<id>.yml
 ```
 
 Display confirmation with persona summary and suggested use cases.

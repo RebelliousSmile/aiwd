@@ -44,14 +44,14 @@ except: print('[MISSING] PyPDF2')
 ### 1.2 Git Status
 
 ```bash
-git -C "<univers>" status --short
+git -C "<client>" status --short
 git -C "<project>" status --short
 ```
 
 ### 1.3 Stash Status
 
 ```bash
-git -C "<univers>" stash list
+git -C "<client>" stash list
 git -C "<project>" stash list
 ```
 
@@ -168,10 +168,10 @@ python -c "from pathlib import Path; Path('docs/extraction/<source-name>/raw/chu
 
 ```bash
 # View stash content
-git -C "<univers>" stash show -p
+git -C "<client>" stash show -p
 
 # Drop if not needed
-git -C "<univers>" stash drop
+git -C "<client>" stash drop
 ```
 
 ### 5.4 Clean and Restart
@@ -215,3 +215,4 @@ python scripts/extract-pdf.py <project> <source.pdf>
 1. [Action]
 2. [Action]
 ```
+

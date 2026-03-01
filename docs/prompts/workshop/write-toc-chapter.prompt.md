@@ -67,7 +67,7 @@ Chapitre $ARGUMENTS
 ### Persona Feedback (mode --feedback uniquement)
 
 ```markdown
-@.docs/comments/<chapitre>-personas.md  # si --feedback spécifié
+@.wip/comments/<chapitre>-personas.md  # si --feedback spécifié
 ```
 
 ### TOC-Chapter existant (mode --feedback uniquement)
@@ -95,7 +95,7 @@ Chapitre $ARGUMENTS
 - Adapter la structure selon le template du type de document
 - Creer le fichier dans `.toc/toc-chapter<XX>.md`
 - Format numero: 2 chiffres (01, 02... 10, 11)
-- Ne pas inventer de contenu absent de INDEX.md ou de la documentation univers
+- Ne pas inventer de contenu absent de INDEX.md ou de la documentation client/projet
 - **Mode --feedback:** Régénération TOTALE depuis INDEX.md. Le toc-chapter existant peut être lu pour comprendre les lacunes, mais la fiche est reconstruite de zéro. Le feedback personas sert à enrichir les spécifications (détails manquants, précisions mécaniques, contraintes de ton), pas à patcher l'existant.
 
 ## Etapes
@@ -105,7 +105,7 @@ Chapitre $ARGUMENTS
 1. Lire bank.yml pour identifier le type de document
 2. Lire INDEX.md et extraire les informations du chapitre cible
 3. Charger le template de structure correspondant au type
-4. Charger la documentation univers pertinente
+4. Charger la documentation client/projet pertinente
 5. **IF `--feedback`:** Charger le fichier persona feedback. Lire le toc-chapter existant pour comprendre les lacunes (mais ne PAS l'utiliser comme base).
 
 ### 2. Extraire les Informations du Chapitre
@@ -132,7 +132,7 @@ Depuis INDEX.md, recuperer:
 
 **SKIP si pas de --feedback.**
 
-Parser le fichier `.docs/comments/<chapitre>-personas.md` et extraire des **enrichissements pour la fiche TOC** (pas des corrections textuelles) :
+Parser le fichier `.wip/comments/<chapitre>-personas.md` et extraire des **enrichissements pour la fiche TOC** (pas des corrections textuelles) :
 
 **2.6.1 Must-haves manquants → Spécifications à ajouter**
 
@@ -377,10 +377,9 @@ Fusionner les meilleurs éléments de chaque variante dans la fiche finale. La f
 
 ### 4. Verifier la Coherence
 
-- Les personnages mentionnes existent dans personnages.md
-- Les lieux mentionnes existent dans geographie.md
+- Les termes métier existent dans glossaire.md
 - Les termes utilisent la terminologie correcte
-- La progression est coherente avec les chapitres adjacents
+- La progression est cohérente avec les chapitres adjacents
 
 ### 5. Generer le Fichier
 
@@ -412,15 +411,11 @@ Creer `.toc/toc-chapter<XX>.md`:
 
 ## [Sections selon template du type]
 
-### Personnages
+### Termes Clés *(si pertinent)*
 
-| Nom | Role dans ce chapitre |
-|-----|----------------------|
-| [perso] | [action/evolution] |
-
-### Lieux
-
-- [lieu]: [description courte]
+| Terme | Définition brève (glossaire) |
+|-------|------------------------------|
+| [terme] | [définition courte] |
 
 ### [Autres sections selon type]
 
@@ -489,7 +484,7 @@ Après génération de la fiche, effectuer une relecture en adoptant le regard d
 
 1. Lire la section "Relecture TOC" d'overview.md pour trouver les focus points du persona identifié
 2. Charger le fichier persona YAML référencé (profil expert, must-haves, deal-breakers)
-3. Charger la documentation pertinente (terminologie.md, UNIVERS.md, document-rules.md selon les focus)
+3. Charger la documentation pertinente (CLIENT.md, glossaire.md, document-rules.md selon les focus)
 
 **5.5.3 — Relire la fiche en persona**
 
@@ -626,9 +621,8 @@ Apres generation, proposer:
 - [ ] Informations INDEX.md fidèlement reprises
 - [ ] Template type correctement appliqué
 - [ ] Output-style sélectionné et indiqué
-- [ ] Personnages vérifiés dans documentation univers
-- [ ] Lieux vérifiés dans documentation univers
-- [ ] Terminologie conforme à terminologie.md
+- [ ] Termes métier vérifiés dans glossaire.md
+- [ ] Terminologie conforme à glossaire.md
 - [ ] Connexions chapitres adjacents cohérentes
 - [ ] 3 variantes condensées générées avec axes de divergence distincts
 - [ ] Tableau comparatif forces/risques présenté

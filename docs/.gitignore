@@ -13,3 +13,6 @@
 # OS files
 .DS_Store
 Thumbs.db
+
+# Extractions privees (PDFs sources + TXTs extraits - contenu sous copyright)
+extraction/

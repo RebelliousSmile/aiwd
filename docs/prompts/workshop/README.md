@@ -52,7 +52,7 @@ brainstorm ──→ generate-toc
 |--------|------|--------|--------|
 | `write-technical` | Rédige un chapitre documentation technique | N [--feedback] | `chapitres/chapitreNN.md` |
 | `write-user-guide` | Rédige un chapitre guide utilisateur | N [--feedback] | `chapitres/chapitreNN.md` |
-| `add-text` | Ajoute du contenu à un chapitre existant | Chapitre + contenu | Chapitre enrichi |
+| `add-text` | Ajoute du contenu à un chapitre existant | `<fichier-cible> "sujet"` | Chapitre enrichi |
 
 ### Review & Qualité
 

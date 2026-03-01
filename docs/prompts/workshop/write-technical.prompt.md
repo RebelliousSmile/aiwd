@@ -2,8 +2,14 @@
 name: write-technical
 description: Write technical documentation section in Markdown using output-style, docs and toc
 argument-hint: <section-number-or-range> [--feedback <personas-comment-file>]
-version: 1.1
+version: 1.2
 changelog:
+  - version: 1.2
+    date: 2026-03-01
+    changes:
+      - "output-style override : .claude/output-style.md → .output-styles/<nom-projet>.md"
+      - "Step 5 renommé 'Affinage & Vérification' (suppression confusion avec prompt brainstorm)"
+      - "Transition : chemin complet @docs/prompts/workshop/review-technical.prompt.md"
   - version: 1.1
     date: 2026-02-28
     changes:
@@ -46,7 +52,7 @@ Write a technical documentation section in **Markdown** following the TOC specif
 @<client>/.output-styles/<output-style>.md  # Utiliser le nom depuis toc-chapter
 ```
 ```markdown
-@.claude/output-style.md  # project override if exists
+@.output-styles/<nom-projet>.md  # project override if exists (depuis init-project)
 ```
 
 **Client Documentation:**
@@ -311,7 +317,7 @@ Create a structural draft based on TOC + template + overview:
 | Tables | [quelles données, où] |
 ```
 
-### Step 5: Brainstorm & Refine
+### Step 5: Affinage & Vérification
 
 **Objectif:** Affiner le draft avant l'écriture finale.
 
@@ -493,7 +499,7 @@ IF any key point missing: add or revise text.
 
 ## Next Step
 
-Run: `workshop/review-technical.prompt.md chapitre<XX>.md`
+Run: `@docs/prompts/workshop/review-technical.prompt.md chapitre<XX>.md`
 Then: `scripts/build-icml.py --project <client>/<projet>`
 ```
 
@@ -502,7 +508,7 @@ Then: `scripts/build-icml.py --project <client>/<projet>`
 After chapter is written, route to:
 
 ```
-workshop/review-technical.prompt.md
+@docs/prompts/workshop/review-technical.prompt.md
 Arguments: chapitre<XX>.md
 ```
 

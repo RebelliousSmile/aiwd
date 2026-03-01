@@ -7,7 +7,6 @@ __pycache__/
 *.pyo
 
 # Dépôts Git imbriqués (gérés séparément)
-docs/
 scripts/
 cerascan/documentation/
 

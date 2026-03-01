@@ -23,16 +23,16 @@ Améliore les personas pour qu'ils détectent mieux les vrais problèmes qualit�
 
 **Persona à améliorer :**
 ```yaml
-@<univers>/.templates/personas/$ARGUMENTS[0].yml
+@<client>/.templates/personas/$ARGUMENTS[0].yml
 # OU
 @docs/templates/personas/$ARGUMENTS[0].yml
 ```
 
 **Feedback sources :**
 ```markdown
-@.docs/comments/*.md      # Analyses personas existantes
-@.docs/doctor-report-*.md # Corrections techniques appliquées
-@.docs/review-summary-*.md # Synthèses review-pipeline
+@.wip/comments/*.md      # Analyses personas existantes
+@.wip/reports/doctor-report-*.md # Corrections techniques appliquées
+@.wip/reports/review-summary-*.md # Synthèses review-pipeline
 ```
 
 **Arguments :**
@@ -77,14 +77,14 @@ Focus principal: <criterion avec weight max>
 
 **2.1 Analyser feedback files**
 
-Pour chaque `.docs/comments/*.md` :
+Pour chaque `.wip/comments/*.md` :
 - Extraire Section 1 (TECHNICAL ISSUES)
 - Extraire Section 2 (SYSTEMIC PATTERNS)
 - Extraire Section 3 (QUALITATIVE SCORES) pour ce persona
 
 **2.2 Identifier issues non détectées**
 
-Croiser avec `.docs/doctor-report-*.md` :
+Croiser avec `.wip/reports/doctor-report-*.md` :
 ```
 Issues détectées par doctor MAIS absentes du feedback persona
 → Manque potential dans must-haves
@@ -238,7 +238,7 @@ Sur chapitre problématique avec persona v2.0 :
 
 **Fichiers générés :**
 ```
-<univers>/.templates/personas/<persona-id>.yml (v2.0)
+<client>/.templates/personas/<persona-id>.yml (v2.0)
 .docs/personas-changelog.md
 .docs/persona-validation-<persona-id>-v2.md
 ```
@@ -277,7 +277,7 @@ Sur chapitre problématique avec persona v2.0 :
 ```bash
 # Améliorer olivier-larue basé sur feedback chapitre02
 @docs/prompts/workshop/persona-trainer.prompt.md olivier-larue \
-  --feedback-files ".docs/comments/chapitre02-personas-it*.md" \
+  --feedback-files ".wip/comments/chapitre02-personas-it*.md" \
   --issues-missed "Stats PNJ Trolloc/Myrddraal absentes, Règles Fatale [X]+ non définie"
 ```
 

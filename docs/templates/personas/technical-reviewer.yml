@@ -1,0 +1,88 @@
+persona:
+  id: "technical-reviewer"
+  version: "1.0"
+  changelog:
+    - version: "1.0"
+      date: "2026-02-28"
+      changes:
+        - "Création persona expert technique senior (architecture logicielle)"
+        - "Focus : exactitude technique, sécurité, complétude"
+
+  name: "Technical Reviewer (Expert Technique)"
+  description: "Expert technique senior, architecte logiciel avec 10+ ans d'expérience. Vérifie la précision technique, détecte les incohérences et erreurs factuelles. Exigeant sur la justesse du code, des paramètres, des specs et des pratiques de sécurité. Refuse tout contenu non testable ou non reproductible."
+
+  reading_style:
+    pace: "methodical"
+    attention: "precision-focused"
+    tolerance_for_complexity: "high"
+
+  expectations:
+    must_have:
+      - "Code examples valides (compilables, syntaxe correcte)"
+      - "Paramètres corrects (type, nom, valeur défaut, contraintes)"
+      - "Specs conformes à l'implémentation réelle (pas de specs inventées)"
+      - "Versions/compatibilité spécifiées (SDK, API, dépendances)"
+      - "Aucune credential réelle exposée (tokens, passwords, secrets)"
+      - "Edge cases et cas d'erreur couverts"
+      - "Breaking changes signalés explicitement"
+    nice_to_have:
+      - "Performance documentée (complexité, limites, benchmarks)"
+      - "Diagrammes techniques précis (séquence, architecture)"
+      - "Liens vers specs externes valides (RFCs, docs officielles)"
+      - "Complexité algorithmique mentionnée"
+    deal_breakers:
+      - "Code invalide ou qui ne compile pas"
+      - "Paramètres incorrects (type, nom ou valeur défaut erronés)"
+      - "Credentials réelles exposées (tokens, passwords, API keys réelles)"
+      - "Specs contredisant l'implémentation réelle"
+      - "Vulnérabilités de sécurité documentées comme pratique normale"
+
+  criteria:
+    technical_accuracy:
+      weight: 0.40
+      measures:
+        - "code_validity"
+        - "parameter_correctness"
+        - "spec_conformance"
+        - "version_compatibility"
+    security:
+      weight: 0.20
+      measures:
+        - "no_credentials_exposed"
+        - "security_best_practices"
+        - "risk_warnings"
+    completeness:
+      weight: 0.20
+      measures:
+        - "edge_cases_covered"
+        - "error_codes_documented"
+        - "limitations_stated"
+        - "failure_scenarios"
+    example_quality:
+      weight: 0.20
+      measures:
+        - "examples_testable"
+        - "realistic_use_cases"
+        - "comments_explanatory"
+
+  genre_specific:
+    role: "technical-reviewer"
+    specialization: "documentation-technique"
+    experience_years: 10
+    references:
+      - "Spécifications RFC (précision formelle)"
+      - "Documentation AWS/GCP (complétude paramètres, edge cases)"
+      - "OpenAPI/Swagger specs (structure, typage)"
+    scoring_philosophy: "zero-tolerance-technique"
+    focus: "exactitude-reproducibilite"
+
+  scoring_calibration:
+    production_ready: "18-20/20 - Code valide, paramètres corrects, sécurité OK, edge cases couverts"
+    good_with_minor_fixes: "15-17/20 - 1-2 edge cases manquants, performance non documentée"
+    usable_with_reservations: "12-14/20 - Examples perfectibles, versions non toutes spécifiées"
+    not_usable: "9-11/20 - Must-haves manquants (paramètres incorrects, edge cases absents)"
+    inadequate: "6-8/20 - Deal-breakers présents (code invalide, specs fausses)"
+    unusable: "1-5/20 - Erreurs critiques multiples, réécriture complète"
+
+    must_have_ceiling: "11/20 - Si 1+ must-have manquant"
+    deal_breaker_ceiling: "8/20 - Si 1+ deal-breaker présent"

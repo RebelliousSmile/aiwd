@@ -21,7 +21,7 @@ document:
 # technical-formal | user-friendly | developer-docs | process-documentation
 output-style:
   global: "<client>/.output-styles/<style>.md"
-  projet: ".claude/output-style.md"  # optionnel, surcharge local
+  projet: ".output-styles/<nom>.md"  # optionnel, surcharge local
 
 # ===================================================================
 # DOCUMENTATION CLIENT (fichiers thématiques)
@@ -54,7 +54,7 @@ overview: "overview.md"
 # Sommaire détaillé avec synopsis des chapitres
 toc:
   fichier: ".toc/INDEX.md"
-  # OU chemin relatif si partagé au niveau univers
+  # OU chemin relatif si partagé au niveau client
   # fichier: "../toc-templates/novel.md"
 
 # ===================================================================
@@ -70,7 +70,7 @@ toc:
 # EXPORT ICML (INDESIGN)
 # ===================================================================
 # Configuration pour le pipeline ICML/InDesign (optionnel)
-# Utilise par: python scripts/build-icml.py --project "<univers>/<projet>"
+# Utilise par: python scripts/build-icml.py --project "<client>/<projet>"
 
 icml:
   chapitres-source: "chapitres/"

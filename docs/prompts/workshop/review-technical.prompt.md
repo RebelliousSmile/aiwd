@@ -2,8 +2,16 @@
 name: review-technical
 description: Review technical documentation section for accuracy, clarity, and completeness
 argument-hint: Section file to review (e.g., section03.md)
-version: 1.0
+version: 1.1
 changelog:
+  - version: 1.1
+    date: 2026-03-01
+    changes:
+      - "output-style override : .claude/output-style.md → .output-styles/<nom-projet>.md"
+      - "Scoring : A-F → /20 (cohérence avec comment.prompt.md)"
+      - "Critère 'Immersion' → 'Fluidité de lecture'"
+      - "Output Step 10 : sauvegarde explicite dans .wip/reports/"
+      - "Transition : chemin complet @docs/prompts/workshop/doctor.prompt.md"
   - version: 1.0
     date: 2026-02-28
     changes:
@@ -34,7 +42,7 @@ Review a written technical documentation section to verify all resources (output
 **Output Style (reference):**
 ```markdown
 @<client>/.output-styles/<output-style>.md
-@.claude/output-style.md
+@.output-styles/<nom-projet>.md  # project override if exists
 ```
 
 **TOC (expected content):**
@@ -165,15 +173,15 @@ Style Conformity:     X/15 (5 items x 3)
 Glossary:             X/[N*3]
 
 Total Issues Score:   X/[max]
-Quality Rating:       [A/B/C/D/F]
+Score Qualité:        [N]/20  ← (1 - Issues/Max) * 20, arrondi
 ```
 
-**Rating Scale:**
-- A (0-10%): Excellent, ready for doctor review
-- B (10-25%): Good, minor fixes needed
-- C (25-50%): Acceptable, several fixes needed
-- D (50-75%): Poor, major revision needed
-- F (75%+): Unacceptable, rewrite required
+**Équivalence /20 :**
+- 18-20/20 : Excellent — prêt pour doctor
+- 15-17/20 : Bon — corrections mineures
+- 12-14/20 : Acceptable — corrections nécessaires
+- 8-11/20 : Insuffisant — révision majeure requise
+- 0-7/20 : Réécriture requise
 
 ### Step 9: Generate Issues Table
 
@@ -192,25 +200,29 @@ Quality Rating:       [A/B/C/D/F]
 
 ### Step 10: Decide Action
 
-**IF Rating A or B:**
+**IF Score ≥ 15/20 :**
 ```
 APPROVE for doctor review
-Route to: workshop/doctor.prompt.md
+Route to: @docs/prompts/workshop/doctor.prompt.md
 ```
 
-**IF Rating C:**
+**IF Score 12-14/20 :**
 ```
 Request minor fixes
 List specific changes needed
 WAIT FOR USER to apply fixes or request auto-fix
 ```
 
-**IF Rating D or F:**
+**IF Score ≤ 11/20 :**
 ```
 Request major revision
 Recommend re-running write-technical/write-user-guide
 WAIT FOR USER decision
 ```
+
+### Step 10a: Save Report
+
+Sauvegarder dans `.wip/reports/chapitre<XX>-review.md`
 
 ## Output Format
 
@@ -219,7 +231,7 @@ WAIT FOR USER decision
 
 **File:** `chapitres/[filename]`
 **Reviewed:** [date]
-**Rating:** [A/B/C/D/F] ([score]%)
+**Score:** [N]/20
 **Audience:** [technical/end-user/mixed]
 
 ---
@@ -317,19 +329,23 @@ WAIT FOR USER decision
 
 **Action:** [Approve/Fix/Revise/Rewrite]
 
+**Score:** [N]/20
+
 **Rationale:** [Brief explanation of decision]
 
 **Next Step:**
-- IF Approve: `workshop/doctor.prompt.md chapitre<XX>.md`
-- IF Fix: Apply fixes, re-run review
-- IF Revise/Rewrite: `workshop/write-technical.prompt.md <XX>` OU `workshop/write-user-guide.prompt.md <XX>`
+- IF ≥ 15/20 : `@docs/prompts/workshop/doctor.prompt.md chapitre<XX>.md`
+- IF 12-14/20 : Apply fixes, re-run review
+- IF ≤ 11/20 : `@docs/prompts/workshop/write-technical.prompt.md <XX>` ou `write-user-guide`
+
+**Rapport sauvegardé :** `.wip/reports/chapitre<XX>-review.md`
 ```
 
 ## Transition
 
-**On Approval (A/B rating):**
+**On Approval (≥ 15/20) :**
 ```
-Route to: workshop/doctor.prompt.md
+Route to: @docs/prompts/workshop/doctor.prompt.md
 Arguments: chapitre<XX>.md
 ```
 

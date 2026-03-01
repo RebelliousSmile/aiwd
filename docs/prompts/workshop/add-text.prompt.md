@@ -1,9 +1,15 @@
 ---
 name: add-text
-description: Ajout de texte narratif dans un chapitre existant (respect output-style, causalité, atmosphère)
+description: Ajout de contenu dans un chapitre existant (respect output-style, causalité, structure)
 argument-hint: <fichier-cible> "sujet ou thème" [--section "<titre-section>"] [--length short|medium|full]
-version: 1.0
+version: 1.1
 changelog:
+  - version: 1.1
+    date: 2026-03-01
+    changes:
+      - "Généralisation : suppression références Écryme hardcodées"
+      - "Output-style chargé depuis bank.yml (client-agnostic)"
+      - "Rules : suppression style Écryme-specific"
   - version: 1.0
     date: 2026-02-20
     changes:
@@ -12,41 +18,40 @@ changelog:
       - "Suppression références obsolètes (sommaire.md, first-draft/)"
 ---
 
-# Add Text: Ajout de texte narratif
+# Add Text: Ajout de contenu dans un chapitre
 
 ## Goal
 
-Ajouter un ou plusieurs paragraphes de texte narratif dans un chapitre existant, en respectant l'output-style du projet, la règle de causalité et le fil narratif du fichier cible.
+Ajouter un ou plusieurs paragraphes de contenu dans un chapitre existant, en respectant l'output-style du projet, la règle de causalité et la structure du fichier cible.
 
 ## Arguments **[3]**
 
 ```bash
 # Usage de base — Claude détermine l'emplacement optimal
-add-text.prompt.md chapitres/chapitre02.md "La Vapeur : exemple d'introduction atmosphérique"
+add-text.prompt.md chapitres/chapitre02.md "Introduction à l'authentification OAuth"
 
 # Avec section cible précise
-add-text.prompt.md chapitres/chapitre02.md "Soupape face Vertige" --section "De la Soupape et de ses deux visages"
+add-text.prompt.md chapitres/chapitre02.md "Gestion des erreurs 401" --section "Codes d'erreur API"
 
 # Avec longueur souhaitée
-add-text.prompt.md chapitres/chapitre03.md "Exemple ballade Bienvenue dans ma demeure" --length full
+add-text.prompt.md chapitres/chapitre03.md "Exemple d'intégration SDK Python" --length full
 ```
 
-## Context Resources **[8]**
+## Context Resources **[7]**
 
 **MUST load all (in order):**
 
-1. **Bank:** `@bank.yml` (document type, univers)
+1. **Bank:** `@bank.yml` (document type, client, output-style)
 2. **TOC-Chapter:** `@.toc/toc-chapter<XX>.md` (correspondant au fichier cible — récupérer output-style spécifique)
-3. **Output-style:** Charger le fichier indiqué dans toc-chapter (ex: `@ecryme/.output-styles/solo-ecryme.md`)
-4. **Terminologie:** `@ecryme/.docs/terminologie.md`
-5. **Document-rules:** `@.docs/document-rules.md` (mécaniques officielles, valeurs exactes)
+3. **Output-style:** Charger le fichier indiqué dans toc-chapter ; fallback : `output-style.global` de bank.yml
+4. **Glossaire:** `@<client>/.docs/glossaire.md` (termes métier)
+5. **Document-rules:** `@.docs/document-rules.md` (optionnel — si présent)
 6. **Target file:** `@$ARGUMENTS[0]` (chapitre cible — lire **en entier** avant d'insérer)
 7. **Sujet:** `$ARGUMENTS[1]` (thème ou sujet à développer)
-8. **Section cible:** `$ARGUMENTS[--section]` (optionnel — si absent, déterminer par règle de causalité)
 
 **Logique output-style:**
 - Extraire du toc-chapter la ligne `**Output-style:** <filename>.md`
-- Charger ce fichier depuis `<univers>/.output-styles/<filename>.md`
+- Charger ce fichier depuis `<client>/.output-styles/<filename>.md`
 - Fallback: utiliser `output-style.global` de bank.yml
 
 ## Règle de causalité (placement)
@@ -67,18 +72,12 @@ Quand `--section` n'est pas précisé, déterminer l'emplacement optimal :
 **CRITICAL:**
 - ✅ LIRE le fichier cible en entier avant d'insérer quoi que ce soit
 - ✅ RESPECTER le ton et le registre déjà présents dans le fichier cible
-- ✅ SUIVRE l'output-style (atmosphère, structure phrases, formules titres)
-- ✅ FONDER le contenu sur document-rules.md et terminologie.md — ne jamais inventer
+- ✅ SUIVRE l'output-style (ton, structure des phrases, formules de titres)
+- ✅ FONDER le contenu sur glossaire.md et document-rules.md — ne jamais inventer
+- ✅ RESPECTER la terminologie définie dans glossaire.md
 - ❌ NEVER insérer du contenu redondant avec ce qui existe déjà dans le chapitre
-- ❌ NEVER modifier le texte existant (sauf insertions explicites)
+- ❌ NEVER modifier le texte existant (sauf insertions explicites demandées)
 - ❌ NEVER utiliser des personas (c'est comment.prompt.md)
-
-**Style obligatoire (cf. output-style) :**
-1. Prose XIXe soutenue — pas de liste pour les explications
-2. Atmosphère avant mécanique — contexte narratif avant la règle
-3. Métaphores mécaniques présentes naturellement
-4. Sensorialité écrymienne — au moins 2 sens distincts dans les passages descriptifs
-5. Typographie française (guillemets «», tirets —, accents, majuscules accentuées)
 
 ## Longueur
 
@@ -100,9 +99,9 @@ Produire :
 ```markdown
 ## Texte à insérer
 
-[texte narratif ici]
+[contenu ici]
 
 ---
-**Position :** Après la ligne 47 (fin de la section "De la Soupape"), avant "De la Jauge Confident"
-**Justification :** La Soupape est présentée avant ses effets sur les jauges — insertion respecte la causalité.
+**Position :** Après la ligne 47 (fin de la section "Authentification"), avant "Gestion des tokens"
+**Justification :** Le concept d'OAuth est présenté avant son implémentation — insertion respecte la causalité.
 ```

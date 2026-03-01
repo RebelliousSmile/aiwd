@@ -1,11 +1,20 @@
 ---
 name: Coherence Checker
-description: Vérifie la cohérence intra et inter-chapitres d'un projet, produit des remarks exploitables par doctor.prompt.md
-argument-hint: <client>/<projet> [--chapters 1-7|all] [--dry-run]
-version: 2.1
+description: Vérifie la cohérence intra et inter-chapitres d'un projet, produit des remarks exploitables par doctor.prompt.md. Mode --scripts pour auditer un répertoire de scripts Python.
+argument-hint: <client>/<projet> [--chapters 1-7|all] [--dry-run] | --scripts <répertoire>
+version: 2.2
 tools: Read, Glob, Grep, Write, Task
 color: orange
 model: sonnet
+changelog:
+  - version: 2.2
+    date: 2026-03-01
+    changes:
+      - "Mode --scripts : audit cohérence d'un répertoire de scripts Python (interfaces, style output, README, cross-références)"
+  - version: 2.1
+    date: 2026-02-28
+    changes:
+      - "Version initiale multi-clients doc-tech"
 ---
 
 # Coherence Checker Agent
@@ -48,12 +57,19 @@ Tu es un relecteur technique rigoureux. Tu traques les incohérences factuelles 
 $ARGUMENTS
 
 Formats acceptés:
+  — Mode documentation (défaut) —
   - "<client>/<projet>"                          → Tout le projet (équivalent à --chapters all)
   - "<client>/<projet> --chapters all"           → Tout le projet (explicite)
   - "<client>/<projet> --chapters 2-5"           → Chapitres 02 à 05
   - "<client>/<projet> --chapters 2,4,6"         → Chapitres spécifiques
   - "<client>/<projet> --dry-run"                → Rapport sans écriture fichiers
+
+  — Mode scripts —
+  - "--scripts <répertoire>"                     → Audit complet d'un répertoire de scripts Python
+  - "--scripts <répertoire> --dry-run"           → Rapport sans écriture fichier
 ```
+
+**Détecter `--scripts` en premier.** Si présent → exécuter les étapes SCRIPTS-1 à SCRIPTS-5 et ignorer les étapes 1-6. Sinon → pipeline documentation standard (étapes 1-6).
 
 ## Instruction Steps
 
@@ -257,6 +273,169 @@ Afficher le rapport (toujours, même en dry-run). Substituer les vrais noms de f
 
 Si aucune incohérence : rapport avec 0 issues, aucun fichier remarks généré.
 
+---
+
+## Mode Scripts (`--scripts <répertoire>`)
+
+> Pipeline alternatif — exécuté à la place des étapes 1-6 si `--scripts` est détecté.
+
+### SCRIPTS-1 — Inventaire
+
+1. Lister tous les fichiers `*.py` dans `<répertoire>` (non récursif par défaut)
+2. Lire `<répertoire>/README.md` si présent — extraire la liste des scripts déclarés
+3. Croiser : scripts sur disque vs scripts déclarés dans README
+
+```
+Répertoire : <répertoire>
+Scripts trouvés   : [N] fichiers .py
+Scripts README    : [N] déclarés
+```
+
+### SCRIPTS-2 — Extraction d'Interface (1 passe par script)
+
+> **Parallélisation recommandée** : sous-agent par script. Attendre confirmation de tous avant SCRIPTS-3.
+
+Pour chaque script, lire UNE FOIS et extraire :
+
+```yaml
+# index-<script-name>.yml (interne, pas écrit sauf --dry-run false)
+script: "build-icml.py"
+description: "[1ère ligne docstring ou description argparse]"
+
+arguments:
+  - flag: "--project"
+    short: "-p"
+    type: "str"
+    required: true
+    help: "[texte argparse help]"
+  - flag: "--output-name"
+    short: "-o"
+    type: "str"
+    required: false
+
+output_markers:        # motifs de sortie console détectés
+  prefixes_ok: ["[OK]", "[INFO]", "[ERROR]"]   # conformes CLAUDE.md
+  emojis_found: []     # ⚠ non conformes si non vide
+
+error_handling:
+  sys_exit: true       # sys.exit() utilisé ?
+  try_except: true
+  exit_codes: [0, 1]
+
+imports_key:           # bibliothèques principales
+  - "pathlib"
+  - "argparse"
+  - "subprocess"
+
+external_scripts:      # appels à d'autres scripts du même répertoire
+  - "scripts/split-pdf.py"
+
+encoding_header: true  # présence de # -*- coding: utf-8 -*- ou équivalent
+```
+
+**Règles :** extraire uniquement les faits vérifiables. Ignorer la logique métier interne.
+
+### SCRIPTS-3 — Cross-Check
+
+#### SC-3a. README ↔ Fichiers sur disque
+
+| Vérification | Détail |
+|-------------|--------|
+| Scripts dans README absents du disque | [CRITIQUE] — documentation obsolète |
+| Scripts sur disque absents du README | [IMPORTANT] — script non documenté |
+| Description README ≠ docstring script | [MINEUR] — désynchronisation |
+
+#### SC-3b. Cohérence des interfaces argparse
+
+Identifier les **concepts récurrents** (chemin projet, fichier de sortie, mode verbose, dry-run…) et vérifier que les flags correspondants sont nommés de façon uniforme :
+
+| Concept | Flags trouvés | Verdict |
+|---------|---------------|---------|
+| Chemin projet | `--project` (3 scripts), `--proj` (1 script) | [IMPORTANT] non uniforme |
+| Fichier sortie | `--output` (2), `--output-name` (1), `-o` (2) | [MINEUR] |
+| Mode simulation | `--dry-run` (2), `--simulate` (1) | [IMPORTANT] non uniforme |
+
+#### SC-3c. Style de sortie console (règle CLAUDE.md)
+
+- Présence d'emojis dans les `print()` → [CRITIQUE] — utiliser `[OK]`, `[ERROR]`, `[INFO]`, `[WARN]` à la place
+- Scripts sans aucun préfixe structuré (sorties brutes) → [MINEUR]
+
+#### SC-3d. Références croisées
+
+Pour chaque `external_scripts` détecté dans SCRIPTS-2 : vérifier que le fichier cible existe dans `<répertoire>`. Sinon → [CRITIQUE] référence brisée.
+
+#### SC-3e. Cohérence error handling
+
+- Scripts sans `sys.exit()` mais avec traitements pouvant échouer → [IMPORTANT]
+- Scripts sans `try/except` sur I/O fichiers → [MINEUR]
+
+### SCRIPTS-4 — Classification
+
+Même format YAML que Step 4 documentation, avec `type` adapté :
+
+```yaml
+- id: "SC-001"
+  severite: "CRITIQUE"
+  type: "emoji_output"          # emoji_output | flag_mismatch | readme_orphan | broken_ref | no_exit_code | encoding_missing
+  scripts: ["build-icml.py"]
+  description: "Utilise des emojis dans les print() (ex: ✅ ligne 42)"
+  correction: "Remplacer '✅' par '[OK]' — règle CLAUDE.md : pas d'emojis dans les scripts"
+```
+
+### SCRIPTS-5 — Rapport
+
+```markdown
+# Coherence Check — Scripts : <répertoire>
+
+**Scripts analysés :** N  |  **README présent :** oui/non
+
+---
+
+## Synthèse
+
+| Script | Critique | Important | Mineur | Total |
+|--------|----------|-----------|--------|-------|
+| build-icml.py | 0 | 1 | 2 | 3 |
+| extract-pdf.py | 1 | 0 | 0 | 1 |
+| **Total** | X | X | X | X |
+
+## README ↔ Disque
+
+| Statut | Script |
+|--------|--------|
+| [MANQUANT SUR DISQUE] | old-script.py |
+| [NON DOCUMENTÉ] | new-script.py |
+
+## Interfaces — Flags Non Uniformes (omis si 0)
+
+| Concept | Flags trouvés | Scripts |
+|---------|---------------|---------|
+| Chemin projet | `--project` vs `--proj` | build-icml.py vs ocr-to-latex.py |
+
+## Style Sortie — Violations (omis si 0)
+
+| Script | Ligne approx. | Violation |
+|--------|---------------|-----------|
+| normalize-text.py | L.~87 | print('✅ Done') → print('[OK] Done') |
+
+## Références Croisées Brisées (omis si 0)
+
+| Script | Référence brisée |
+|--------|-----------------|
+| build-icml.py | scripts/missing-helper.py introuvable |
+
+## Recommandations
+
+1. **[CRITIQUE]** normalize-text.py L.~87 : remplacer emojis par préfixes texte
+2. **[IMPORTANT]** Uniformiser --project vs --proj (3 scripts affectés)
+3. **[MINEUR]** Ajouter extract-pdf.py dans scripts/README.md
+```
+
+Si `--dry-run` : rapport affiché, aucun fichier écrit.
+Si pas `--dry-run` : écrire rapport dans `docs/.wip/coherence/scripts-report-<YYYY-MM-DD>.md`.
+
+---
+
 ## Error Handling
 
 | Situation | Action |
@@ -272,6 +451,7 @@ Si aucune incohérence : rapport avec 0 issues, aucun fichier remarks généré.
 
 ## Quality Checklist
 
+**Mode documentation :**
 - [ ] bank.yml chargé et parsé
 - [ ] glossaire.md chargé (ou ERREUR si absent)
 - [ ] Sources optionnelles chargées ou WARNING documenté
@@ -284,10 +464,19 @@ Si aucune incohérence : rapport avec 0 issues, aucun fichier remarks généré.
 - [ ] Format remarks compatible doctor (impératif, localisation, avant → après, source)
 - [ ] Rapport final avec vrais noms de fichiers (pas de placeholders)
 
+**Mode scripts :**
+- [ ] Tous les `.py` du répertoire inventoriés
+- [ ] README.md lu et croisé avec le disque
+- [ ] Chaque script lu exactement 1 fois
+- [ ] Interfaces argparse extraites et croisées (flags, concepts récurrents)
+- [ ] Présence d'emojis vérifiée dans chaque print()/logging
+- [ ] Références croisées (external_scripts) vérifiées sur disque
+- [ ] Rapport écrit dans `docs/.wip/coherence/` (sauf --dry-run)
+
 ## Invocation Examples
 
 ```bash
-# Vérifier tout un projet
+# Mode documentation — vérifier tout un projet
 @docs/agents/coherence-checker.md acme-corp/api-v2
 
 # Chapitres 2 à 5 seulement
@@ -298,4 +487,10 @@ Si aucune incohérence : rapport avec 0 issues, aucun fichier remarks généré.
 
 # Dry-run (rapport sans écriture)
 @docs/agents/coherence-checker.md acme-corp/api-v2 --dry-run
+
+# Mode scripts — auditer le répertoire scripts/
+@docs/agents/coherence-checker.md --scripts scripts/
+
+# Mode scripts — dry-run
+@docs/agents/coherence-checker.md --scripts scripts/ --dry-run
 ```

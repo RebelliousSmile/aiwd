@@ -1,7 +1,23 @@
 ---
 name: tone-finder
-description: Generate/improve output-styles from source texts, questionnaire, or feedback
-argument-hint: <univers> [source-files...] [--only novel|rules|scenario] [--extend] [--improve-from-feedback]
+description: Génère ou améliore les output-styles depuis des textes sources, un questionnaire, ou des feedbacks
+argument-hint: <client> [source-files...] [--only technical-formal|user-friendly|developer-docs|process-documentation] [--extend] [--improve-from-feedback]
+version: 1.1
+changelog:
+  - version: 1.1
+    date: 2026-03-01
+    changes:
+      - "argument-hint : <univers> → <client>, types JdR supprimés"
+      - "Step 1 : Analyzing [client] (pas [univers])"
+      - "Step 4 template : Output Style: [Client] (pas [Univers])"
+      - "Step 6 : path <client>/.output-styles/ (pas <univers>/)"
+      - "Questionnaire Q1 adapté doc-tech, Q9/Q11 généralisés (suppression MJ)"
+      - "Mode Amélioration : .docs/comments/ → .wip/comments/"
+      - "Step 7C/7D : <univers>/.output-styles/ → <client>/.output-styles/, changelog vers .wip/reports/"
+  - version: 1.0
+    date: 2026-01-31
+    changes:
+      - "Version initiale"
 ---
 
 # Tone Finder Prompt
@@ -31,7 +47,7 @@ Options:
 
 - Analyze WRITING STYLE first, formatting second
 - **[1] Determine mode immediately** (Source / Questionnaire / Hybride / Amélioration)
-- Check existing `<univers>/.output-styles/` first
+- Check existing `<client>/.output-styles/` first
 - **[5] In questionnaire mode, co-construct examples with user**
 - **[NEW] In amélioration mode, analyze feedback patterns before proposing changes**
 - Max 15 questions total in questionnaire mode
@@ -41,10 +57,10 @@ Options:
 ## Step 1: Initialize & Route [1]
 
 ```
-Analyzing [univers]...
+Analyzing [client]...
 Sources provided: [list or 'none']
 Existing styles: [list or 'none']
-Feedback files: [.docs/comments/*.md or doctor reports]
+Feedback files: [.wip/comments/*.md or doctor reports]
 
 MODE DETECTED: [Source / Questionnaire / Hybride / Amélioration]
 ```
@@ -118,8 +134,8 @@ MODE DETECTED: [Source / Questionnaire / Hybride / Amélioration]
 
 **Catégorie 1 — Identité du style**
 
-1. **Genre principal ?**
-   - Fantasy / Horror / Sci-Fi / Contemporain / Historique / Autre
+1. **Type de document ?**
+   - user-guide / technical-doc / api-doc / process-doc / roman *(legacy JdR)* / scénario JdR *(legacy)*
 
 2. **Ton en 3-5 mots ?**
    - Ex: "sombre, poétique, mélancolique" ou "épique, héroïque, lumineux"
@@ -157,13 +173,13 @@ MODE DETECTED: [Source / Questionnaire / Hybride / Amélioration]
 
 **Catégorie 3 — Formatage**
 
-9. **POV pour la fiction ?**
-   - 1ère personne / 3ème personne / Variable
+9. **POV / Adresse au lecteur ?**
+   - Tutoiement / Vouvoiement / Impersonnel / 1ère personne *(fiction)* / 3ème personne *(fiction)*
 
 10. **Format des dialogues ?**
     - Tirets cadratins (— Texte) / Guillemets ("Texte")
 
-11. **Adresse au lecteur/MJ ?**
+11. **Adresse au lecteur ?**
     - Tutoiement / Vouvoiement / Impersonnel
 
 12. **Typographie spéciale ?**
@@ -211,7 +227,7 @@ Si sources partiels :
 Structure obligatoire du fichier généré :
 
 ```markdown
-# Output Style: [Univers] — [Type]
+# Output Style: [Client] — [Type]
 
 **Source:** [documents analysés OU "Questionnaire"]
 **Version:** X.0
@@ -320,7 +336,7 @@ Si ajustements nécessaires, préciser.
 
 ```
 Created:
-- <univers>/.output-styles/<univers>-[type].md (v1.0)
+- <client>/.output-styles/<type-style>.md (v1.0)
 
 Mode utilisé: [Source / Questionnaire / Hybride]
 Métriques:
@@ -330,7 +346,7 @@ Métriques:
 
 bank.yml update:
 output-style:
-  [type]: "<univers>/.output-styles/<univers>-[type].md"
+  global: "<client>/.output-styles/<type-style>.md"
 ```
 
 ---
@@ -356,7 +372,7 @@ output-style:
 **Load feedback sources:**
 ```bash
 # Comment feedback (persona analysis)
-.docs/comments/chapitre*-personas.md
+.wip/comments/chapitre*-personas.md
 
 # Doctor reports (technical corrections)
 <rechercher doctor reports récents>
@@ -428,18 +444,18 @@ Pour chaque pattern 🔴 ou 🟡 :
 ```
 
 **Pour chaque approbation :**
-1. Mettre à jour `<univers>/.output-styles/<type>.md`
+1. Mettre à jour `<client>/.output-styles/<type-style>.md`
 2. Incrémenter version (1.0 → 1.1 si mineur, 2.0 si majeur)
-3. Logger dans `.docs/output-style-changelog.md`
+3. Logger dans `.wip/reports/output-style-changelog.md`
 
 ### Step 7D: Generate Changelog
 
-**Créer/mettre à jour :** `.docs/output-style-changelog.md`
+**Créer/mettre à jour :** `.wip/reports/output-style-changelog.md`
 
 ```markdown
-# Changelog Output-Style : WoT
+# Changelog Output-Style : [Client]
 
-## v1.1 (2026-02-13) - Amélioration Typographie
+## v1.1 (AAAA-MM-JJ) - [Titre amélioration]
 
 **Source :** Feedback personas (chapitres 01, 03, 05)
 

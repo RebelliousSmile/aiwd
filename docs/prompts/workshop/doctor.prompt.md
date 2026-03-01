@@ -81,12 +81,12 @@ doctor.prompt.md chapitres/chapitre01.md --dry-run
 - ✅ PRESERVE narrative voice and style
 - ✅ FOLLOW output-style conventions for all additions (ton, format, niveau de détail)
 - ❌ NEVER use personas (that's comment.prompt.md)
-- ❌ NEVER invent content not supported by TOC, terminologie, or UNIVERS.md
+- ❌ NEVER invent content not supported by TOC, CLIENT.md, or glossaire.md
 
 **Apply:**
 1. French typography (guillemets «», tirets cadratins —, espaces insécables)
 2. French grammar and orthography (accents é è ê à ù, conjugaison)
-3. Terminologie per terminologie.md (strict)
+3. Terminologie per glossaire.md (strict)
 4. Output-style conventions (dialogue format, emphasis, lists)
 
 **Document:**
@@ -157,7 +157,7 @@ Build correction list by priority:
 
 **🔴 Critical:**
 - Fautes d'orthographe/grammaire
-- Erreurs de terminologie (terminologie.md)
+- Erreurs de terminologie (glossaire.md)
 - Accents manquants (é è ê ë à â ù û ô î ï ç œ æ)
 
 **🟡 Important:**
@@ -291,7 +291,7 @@ Pour feedback qualitatif personas:
 
 - [ ] Contexte chargé (bank.yml → output-style)
 - [ ] Output-style respecté (ton, format, niveau de détail)
-- [ ] Terminologie vérifiée (terminologie.md)
+- [ ] Terminologie vérifiée (glossaire.md)
 - [ ] Typographie française appliquée
 - [ ] Remarques utilisateur traitées
 - [ ] Redundancy scan inter-chapitres effectué (chapitres 02+)

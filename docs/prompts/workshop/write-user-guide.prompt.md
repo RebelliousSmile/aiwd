@@ -2,8 +2,14 @@
 name: write-user-guide
 description: Write user guide section in Markdown with step-by-step instructions
 argument-hint: <section-number-or-range> [--feedback <personas-comment-file>]
-version: 1.0
+version: 1.1
 changelog:
+  - version: 1.1
+    date: 2026-03-01
+    changes:
+      - "output-style override : .claude/output-style.md → .output-styles/<nom-projet>.md"
+      - "Load order : toc-chapter chargé EN PREMIER (cohérence avec write-technical)"
+      - "Transition : chemin complet @docs/prompts/workshop/comment.prompt.md"
   - version: 1.0
     date: 2026-02-28
     changes:
@@ -22,6 +28,14 @@ Write a user guide section in **Markdown** with step-by-step instructions, follo
 
 ### Required Resources (MUST load all)
 
+**Table of Contents (chapter specifications - CHARGER EN PREMIER):**
+```markdown
+@.toc/toc-chapter<XX>.md
+```
+*Extraire depuis l'en-tête :*
+- `output-style:` → Nom du fichier output-style à charger
+- `persona review:` → Liste des personas pour cette section
+
 **Bank Configuration:**
 ```yaml
 @bank.yml
@@ -32,7 +46,7 @@ Write a user guide section in **Markdown** with step-by-step instructions, follo
 @<client>/.output-styles/<output-style>.md
 ```
 ```markdown
-@.claude/output-style.md  # project override if exists
+@.output-styles/<nom-projet>.md  # project override if exists (depuis init-project)
 ```
 
 **Client Documentation:**
@@ -40,11 +54,6 @@ Write a user guide section in **Markdown** with step-by-step instructions, follo
 @<client>/.docs/CLIENT.md
 @<client>/.docs/glossaire.md
 @<client>/.docs/brand-guidelines.md
-```
-
-**Table of Contents (chapter specifications):**
-```markdown
-@.toc/toc-chapter<XX>.md
 ```
 
 **Persona Feedback (mode --feedback uniquement):**
@@ -140,12 +149,23 @@ $ARGUMENTS
 
 ### Step 1: Load Context
 
-1. Parse bank.yml for project configuration
-2. Load output-style (global + project override)
-3. Load client documentation
-4. Load TOC and extract target section(s)
+1. **Load TOC chapter FIRST:** `@.toc/toc-chapter<XX>.md`
+   - Extract output-style name from header: `**Output-style:** user-friendly.md`
+   - Extract personas list from header: `**Persona review:** end-user, power-user`
+2. Parse bank.yml for project configuration
+3. **Load output-style specified in TOC header:** `@<client>/.output-styles/<output-style>.md`
+4. Load client documentation (CLIENT.md, glossaire.md)
 5. **IF `--feedback`:** Load persona feedback file. **Ne PAS lire la section existante.**
 6. Verify all resources loaded successfully
+
+**Confirmation Message:**
+```
+[OK] TOC loaded: toc-chapter<XX>.md
+[OK] Output-style: <output-style>.md
+[OK] Personas target: [list]
+[OK] Client docs loaded
+[OK] Ready to write
+```
 
 ### Step 1.5: Cross-Chapter Awareness (chapitres 02+)
 
@@ -451,8 +471,8 @@ IF any check fails: revise content.
 ## Next Steps
 
 1. Capture screenshots if not already available
-2. Persona review: `workshop/comment.prompt.md chapitres/chapitre<XX>.md [personas]`
-3. Doctor corrections (if score ≥ 14/20): `workshop/doctor.prompt.md chapitre<XX>.md`
+2. Persona review: `@docs/prompts/workshop/comment.prompt.md chapitres/chapitre<XX>.md [personas]`
+3. Doctor corrections (if score ≥ 14/20): `@docs/prompts/workshop/doctor.prompt.md chapitre<XX>.md`
 4. Convert to ICML: `scripts/build-icml.py --project <client>/<projet>`
 ```
 
@@ -461,7 +481,7 @@ IF any check fails: revise content.
 After chapter is written, route to:
 
 ```
-workshop/comment.prompt.md
+@docs/prompts/workshop/comment.prompt.md
 Arguments: chapitres/chapitre<XX>.md [persona1 persona2...]
 ```
 

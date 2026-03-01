@@ -40,7 +40,7 @@ Extract content from a PDF and distribute it into appropriate project resources.
 1. Check `$PROJECT/bank.yml` exists
    - IF missing → STOP, ask user to create or specify project
 2. Extract fields from bank.yml:
-   - `univers` (required)
+   - `client` (required)
    - `document.name` (for reference)
 3. Verify `$SOURCE` file exists and is readable
 4. Store source basename: `<source-name>` = filename without extension
@@ -110,7 +110,7 @@ IF `$SOURCE` is a PDF file:
       ## Context
             - **Source**: $SOURCE
       - **Project**: $PROJECT
-      - **Univers**: <univers from bank.yml>
+      - **Client**: <client from bank.yml>
       - **Document**: <document.name from bank.yml>
       - **Created**: YYYY-MM-DD
 
@@ -152,7 +152,7 @@ IF `$SOURCE` is a PDF file:
 
 1. Read `docs/extraction/<source-name>/progress.md`
 2. Extract:
-   - `Univers` → for classification destinations
+   - `Client` → for classification destinations
    - `Project` → for final distribution
    - `Tools Available` → for extraction method
 3. Identify next pending chunk
@@ -192,12 +192,12 @@ Scan text and tag sections:
 
 | Category | Keywords/Patterns | File |
 |----------|-------------------|------|
-| Lore | "histoire", "monde", dates, lieux | `classified/lore.md` |
-| Terminology | "glossaire", "définition:", terme=explication | `classified/terminology.md` |
-| Style | "ton", "style", "écriture", "éviter" | `classified/style.md` |
-| Rules | "règle", "jet", "2d6", stats | `classified/rules.md` |
-| Structure | "chapitre", "partie", sommaires | `classified/structure.md` |
-| Templates | `\begin{`, `\newcommand`, macros | `classified/templates.md` |
+| ClientInfo | "présentation", "à propos", "historique", "contexte", "mission", "valeurs" | `classified/client-info.md` |
+| Terminology | "glossaire", "définition:", terme=explication, "signifie" | `classified/terminology.md` |
+| Style | "ton", "style", "écriture", "éviter", "charte", "couleur", "police", "logo" | `classified/style.md` |
+| Architecture | "architecture", "API", "endpoint", "composant", "flux", "spécification", "procédure", "étape" | `classified/architecture.md` |
+| Structure | "chapitre", "partie", "sommaire", "plan", "section" | `classified/structure.md` |
+| Templates | patterns récurrents, exemples type, modèles de documents | `classified/templates.md` |
 
 **Append with YAML front matter:**
 ```markdown
@@ -262,7 +262,7 @@ For each file in `classified/`:
 
 ```bash
 # git -C works on Windows and Unix
-git -C "<univers>" stash push -m "pre-extraction-<source-name>"
+git -C "<client>" stash push -m "pre-extraction-<source-name>"
 git -C "<project>" stash push -m "pre-extraction-<source-name>"
 ```
 
@@ -272,12 +272,12 @@ Store stash refs for potential rollback.
 
 | Source | Destination | Strategy |
 |--------|-------------|----------|
-| `lore*.md` | `<univers>/.docs/UNIVERS.md` | append with `---` separator |
-| `terminology*.md` | `<univers>/.docs/terminologie.md` | merge by term |
-| `style*.md` | `<univers>/.output-styles/<univers>-<source>.md` | create new |
-| `rules*.md` | `docs/rules-files/<source>.md` | create new |
-| `structure*.md` | `<project>/toc.md` | create/update |
-| `templates*.md` | `<univers>/.templates/latex-patterns.md` | append |
+| `client-info*.md` | `<client>/.docs/CLIENT.md` | append with `---` separator |
+| `terminology*.md` | `<client>/.docs/glossaire.md` | merge by term |
+| `style*.md` | `<client>/.output-styles/<source>.md` | create new |
+| `architecture*.md` | `<client>/.docs/architecture.md` | create/append |
+| `structure*.md` | `<project>/.toc/INDEX.md` | create/update |
+| `templates*.md` | `<client>/.templates/` | append |
 
 For each:
 1. Show preview (first 500 chars + diff if exists)
@@ -290,19 +290,19 @@ For each:
 
 IF `Y` (validate):
 ```bash
-git -C "<univers>" add .docs/ .output-styles/ .templates/
-git -C "<univers>" commit -m "Extract: <source-name>"
+git -C "<client>" add .docs/ .output-styles/ .templates/
+git -C "<client>" commit -m "Extract: <source-name>"
 git -C "<project>" add .
 git -C "<project>" commit -m "Extract: <source-name>"
 # Drop stash (no longer needed)
-git -C "<univers>" stash drop
+git -C "<client>" stash drop
 git -C "<project>" stash drop
 ```
 
 IF `n` (rollback):
 ```bash
-git -C "<univers>" checkout .
-git -C "<univers>" stash pop
+git -C "<client>" checkout .
+git -C "<client>" stash pop
 git -C "<project>" checkout .
 git -C "<project>" stash pop
 ```
@@ -310,7 +310,7 @@ git -C "<project>" stash pop
 
 IF `diff` (review):
 ```bash
-git -C "<univers>" diff
+git -C "<client>" diff
 git -C "<project>" diff
 ```
 → Show changes, ask again
@@ -332,7 +332,7 @@ git -C "<project>" diff
 
 | Category | Sections | Chars | Destination | Action |
 |----------|----------|-------|-------------|--------|
-| Lore | X | Y | .docs/UNIVERS.md | appended |
+| ClientInfo | X | Y | .docs/CLIENT.md | appended |
 | ... | ... | ... | ... | ... |
 
 ## Coverage

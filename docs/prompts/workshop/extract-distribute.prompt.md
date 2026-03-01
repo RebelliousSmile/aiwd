@@ -25,7 +25,7 @@ Merge all classified content, distribute to destinations, with git stash rollbac
 1. Parse progress file:
    - `Source` → original PDF path
    - `Project` → project path
-   - `Univers` → destination universe
+   - `Client` → destination client
 
 2. Verify ALL chunks have status `done`
    - IF any `pending` → STOP, list missing chunks
@@ -64,8 +64,8 @@ For each file in `classified/`:
 **Cross-platform git commands:**
 
 ```bash
-# Stash universe changes
-git -C "<univers>" stash push -m "pre-extraction-<source-name>"
+# Stash client changes
+git -C "<client>" stash push -m "pre-extraction-<source-name>"
 
 # Stash project changes (if different repo)
 git -C "<project>" stash push -m "pre-extraction-<source-name>"
@@ -83,12 +83,12 @@ For each category with content:
 
 | Classified | Destination | Action |
 |------------|-------------|--------|
-| `lore*.md` | `<univers>/.docs/UNIVERS.md` | append |
-| `terminology*.md` | `<univers>/.docs/terminologie.md` | merge |
-| `style*.md` | `<univers>/.output-styles/<univers>-<source>.md` | create |
-| `rules*.md` | `docs/rules-files/<source>.md` | create |
-| `structure*.md` | `<project>/toc.md` | create/update |
-| `templates*.md` | `<univers>/.templates/latex-patterns.md` | append |
+| `client-info*.md` | `<client>/.docs/CLIENT.md` | append |
+| `terminology*.md` | `<client>/.docs/glossaire.md` | merge |
+| `style*.md` | `<client>/.output-styles/<source>.md` | create |
+| `architecture*.md` | `<client>/.docs/architecture.md` | create/append |
+| `structure*.md` | `<project>/.toc/INDEX.md` | create/update |
+| `templates*.md` | `<client>/.templates/` | append |
 
 **For each distribution:**
 
@@ -136,24 +136,24 @@ For each approved distribution:
 
 ```bash
 # Commit universe changes
-git -C "<univers>" add .docs/ .output-styles/ .templates/
-git -C "<univers>" commit -m "Extract: <source-name>"
+git -C "<client>" add .docs/ .output-styles/ .templates/
+git -C "<client>" commit -m "Extract: <source-name>"
 
 # Commit project changes
 git -C "<project>" add .
 git -C "<project>" commit -m "Extract: <source-name>"
 
 # Drop stashes (no longer needed)
-git -C "<univers>" stash drop
+git -C "<client>" stash drop
 git -C "<project>" stash drop
 ```
 
 ### IF `n` (rollback):
 
 ```bash
-# Restore universe
-git -C "<univers>" checkout .
-git -C "<univers>" stash pop
+# Restore client
+git -C "<client>" checkout .
+git -C "<client>" stash pop
 
 # Restore project
 git -C "<project>" checkout .
@@ -165,7 +165,7 @@ git -C "<project>" stash pop
 ### IF `diff` (review changes):
 
 ```bash
-git -C "<univers>" diff
+git -C "<client>" diff
 git -C "<project>" diff
 ```
 
@@ -182,7 +182,7 @@ git -C "<project>" diff
 
 - Source: [original PDF path]
 - Project: [project path]
-- Univers: [universe name]
+- Client: [client name]
 - Chunks processed: [N]
 - Total characters: [X]
 
@@ -190,16 +190,16 @@ git -C "<project>" diff
 
 | Category | Sections | Chars | Destination | Action |
 |----------|----------|-------|-------------|--------|
-| Lore | X | Y | .docs/UNIVERS.md | appended |
-| Terminology | X | Y | .docs/terminologie.md | merged |
+| ClientInfo | X | Y | .docs/CLIENT.md | appended |
+| Terminology | X | Y | .docs/glossaire.md | merged |
 | Style | X | Y | .output-styles/... | created |
-| Rules | X | Y | docs/rules-files/... | created |
-| Structure | X | Y | toc.md | created |
+| Architecture | X | Y | .docs/architecture.md | created |
+| Structure | X | Y | .toc/INDEX.md | created |
 | Templates | X | Y | .templates/... | appended |
 
 ## Git Commits
 
-- `<univers>`: [commit hash] "Extract: <source-name>"
+- `<client>`: [commit hash] "Extract: <source-name>"
 - `<project>`: [commit hash] "Extract: <source-name>"
 
 ## Coverage
@@ -245,7 +245,7 @@ Fichiers crees/modifies:
 - [list with paths]
 
 Commits:
-- <univers>: [hash]
+- <client>: [hash]
 - <project>: [hash]
 
 Archive: docs/extraction/<source-name>/DONE-YYYY-MM-DD.md

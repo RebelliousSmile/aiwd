@@ -1,8 +1,15 @@
 ---
 name: init-project
 description: Vérifie et initialise l'arborescence d'un projet documentation, migre le contenu existant et prépare les ressources (output-styles, personas, bank.yml)
-argument-hint: Chemin vers le projet (ex: "acme-corp/api-documentation")
-version: 1.4
+argument-hint: Chemin vers le projet (ex: "acme-corp/api-documentation") [--integrity-check]
+version: 1.5
+changelog:
+  - version: 1.5
+    date: 2026-03-01
+    changes:
+      - "Mode --integrity-check : audit lecture seule exécutable en cours de cycle de vie"
+      - "Step INT : vérifications croisées TOC↔chapitres, bank.yml↔disque, personas bank.yml↔disque, stubs vs vrais contenus, hygène .wip/"
+      - "Guard Step 3 : bloc de questions sauté si --integrity-check"
 changelog:
   - version: 1.4
     date: 2026-03-01
@@ -59,11 +66,22 @@ Auditer l'arborescence d'un projet documentation, détecter ce qui est déjà fa
 
 ## Context
 
-Chemin du projet : `$ARGUMENTS`
+Chemin du projet : `$ARGUMENTS` (sans `--integrity-check`)
 
 Déterminer :
 - `<client>` = premier segment du chemin (ex: `acme-corp`)
 - `<projet>` = deuxième segment (ex: `api-documentation`)
+
+## Mode
+
+**Détecter `--integrity-check` dans `$ARGUMENTS` avant tout.**
+
+| Mode | Comportement |
+|------|-------------|
+| *(normal)* | Audit → Questions (Step 3) → Création (Steps 4-8) |
+| `--integrity-check` | Audit + vérifications croisées (Steps 0-2 + INT) → Rapport → **STOP. Aucune création.** |
+
+**Mode `--integrity-check`** : peut être lancé à n'importe quel moment du cycle de vie du projet pour vérifier qu'aucune cohérence n'a été cassée (après ajout de chapitres, modifications manuelles, mise à jour bank.yml, etc.).
 
 ## Rules
 
@@ -217,7 +235,110 @@ Si tout est déjà fait : `[OK] Projet entièrement initialisé. Suite : @docs/p
 
 ---
 
+### INT. Vérifications d'Intégrité *(mode --integrity-check uniquement)*
+
+> **Uniquement si `--integrity-check` détecté.** Sinon : passer directement à Step 3.
+
+Vérifications croisées en lecture seule. Cinq domaines.
+
+#### INT.1 — bank.yml ↔ Fichiers sur disque
+
+Pour chaque chemin référencé dans bank.yml, vérifier que le fichier existe réellement :
+
+| Champ bank.yml | Fichier attendu | Statut |
+|----------------|-----------------|--------|
+| `output-style.global` | `<chemin>` | [EXISTS / MANQUANT] |
+| `output-style.projet` | `<chemin>` | [EXISTS / MANQUANT / NON DÉCLARÉ] |
+| `docs.client` | `<chemin>` | [EXISTS / MANQUANT] |
+| `docs.glossaire` | `<chemin>` | [EXISTS / MANQUANT] |
+| `personas.global[*]` | `<chemin>` | [EXISTS / MANQUANT] |
+| `personas.client[*]` | `<chemin>` | [EXISTS / MANQUANT] |
+| `personas.projet[*]` | `<chemin>` | [EXISTS / MANQUANT] |
+| `toc.fichier` | `<chemin>` | [EXISTS / MANQUANT] |
+
+#### INT.2 — TOC ↔ Chapitres
+
+Croiser `.toc/INDEX.md` avec le contenu de `chapitres/` :
+
+- **Chapitres dans INDEX.md mais absents de `chapitres/`** → [ORPHAN-TOC]
+- **Fichiers dans `chapitres/` mais absents de INDEX.md** → [ORPHAN-CHAPITRE]
+- **Chapitres dans `bank.yml chapitres-order` mais absents de `chapitres/`** → [ORPHAN-BANK]
+- **Fichiers `chapitres/*.md` vides (0 octets ou < 10 lignes)** → [VIDE]
+
+#### INT.3 — Qualité des Contenus Clés
+
+Distinguer stubs (créés par init-project) des vrais contenus :
+
+| Fichier | Indicateur stub | Statut |
+|---------|-----------------|--------|
+| `CLIENT.md` | Contient `[À compléter]` ou moins de 30 lignes réelles | [STUB / OK] |
+| `glossaire.md` | Contient `[Terme métier 1]` ou moins de 3 termes définis | [STUB / OK] |
+| `overview.md` | Contient `[À compléter]` ou moins de 20 lignes réelles | [STUB / OK] |
+| `<client>/.output-styles/*.md` | Contient `[extrait réel]` ou moins de 50 lignes | [STUB / OK] |
+
+#### INT.4 — Hygiènes .wip/
+
+- **Fichiers `.wip/comments/<chapitre>-*.md` sans correspondant dans `chapitres/`** → [ORPHAN-COMMENT] (chapitre supprimé ou renommé)
+- **Fichiers `.wip/changelog/<chapitre>-*.md` sans correspondant dans `chapitres/`** → [ORPHAN-CHANGELOG]
+- **Sous-dossiers `.wip/` manquants** (comments / changelog / reports) → [MANQUANT]
+
+#### INT.5 — Cohérence bank.yml Interne
+
+- `document.client` correspond au `<client>` déduit du chemin → [OK / INCOHÉRENT]
+- `document.type` est une valeur valide (`technical-doc|user-guide|api-doc|process-doc`) → [OK / INVALIDE]
+- `icml.chapitres-source` est un dossier existant → [OK / MANQUANT]
+- `icml.output` a une extension `.icml` → [OK / INVALIDE]
+
+#### INT — Rapport Final
+
+```
+=== INTEGRITY CHECK : <client>/<projet> ===
+Date : YYYY-MM-DD
+
+INT.1 — bank.yml ↔ disque
+  [OK]       output-style.global    → <client>/.output-styles/technical-formal.md
+  [MANQUANT] personas.client[0]     → <client>/.templates/personas/missing.yml
+  ...
+
+INT.2 — TOC ↔ chapitres
+  [OK]          chapitre01.md, chapitre02.md, chapitre03.md
+  [ORPHAN-TOC]  chapitre04.md  ← dans INDEX.md mais absent de chapitres/
+  [ORPHAN-CHAPITRE]  annexeB.md  ← dans chapitres/ mais absent de INDEX.md
+  [VIDE]        chapitre03.md  ← fichier présent mais < 10 lignes
+
+INT.3 — Qualité contenus
+  [STUB]  CLIENT.md       ← contient [À compléter]
+  [OK]    glossaire.md    ← 12 termes définis
+  [STUB]  overview.md     ← 8 lignes réelles
+
+INT.4 — Hygiènes .wip/
+  [OK]          .wip/comments/, .wip/changelog/, .wip/reports/
+  [ORPHAN-COMMENT]  .wip/comments/chapitre04-personas.md  ← chapitre04 supprimé
+
+INT.5 — Cohérence bank.yml
+  [OK]          document.client = acme-corp
+  [INVALIDE]    document.type = "tech-doc"  ← valeur non reconnue (→ technical-doc)
+
+RÉSUMÉ
+  Critiques  [rouge]  : N (MANQUANT fichiers référencés, valeurs invalides)
+  Avertissements [orange] : N (STUB contenus, ORPHAN)
+  OK [vert]  : N
+
+RECOMMANDATIONS
+  1. [CRITIQUE] Corriger document.type → "technical-doc" dans bank.yml
+  2. [CRITIQUE] Créer ou corriger le chemin personas manquant
+  3. [AVERT]    Compléter CLIENT.md et overview.md (stubs détectés)
+  4. [AVERT]    Supprimer .wip/comments/chapitre04-personas.md (orphan)
+  5. [AVERT]    Ajouter annexeB.md dans .toc/INDEX.md ou supprimer de chapitres/
+```
+
+**→ STOP. Mode --integrity-check : aucune modification effectuée.**
+
+---
+
 ### 3. Bloc de Questions Unique
+
+> **Skip si `--integrity-check` détecté** → rapport INT déjà affiché, fin du prompt.
 
 **Toutes les décisions sont prises ici. Les étapes 4-8 s'enchaînent sans interruption.**
 

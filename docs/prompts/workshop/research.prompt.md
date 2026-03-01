@@ -15,10 +15,8 @@ Perform comprehensive web research on a topic, cross-reference multiple sources,
 ### Existing Documentation
 
 ```markdown
-@<univers>/.docs/UNIVERS.md
-@<univers>/.docs/terminologie.md
-@<univers>/.docs/lieux.md
-@<univers>/.docs/personnages.md
+@<client>/.docs/CLIENT.md
+@<client>/.docs/glossaire.md
 ```
 
 ### Project-Specific Docs

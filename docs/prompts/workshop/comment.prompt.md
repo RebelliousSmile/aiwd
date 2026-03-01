@@ -2,8 +2,16 @@
 name: comment
 description: Persona-based reader analysis of chapter quality and engagement
 argument-hint: <file> [persona1 persona2...] [--all]
-version: 4.5
+version: 4.6
 changelog:
+  - version: 4.6
+    date: 2026-03-01
+    changes:
+      - "Persona Discovery : <univers> → <client> dans tous les paths"
+      - "Consensus weights : 'Universe personas' → 'Client personas'"
+      - "Step 2.0b : phrasing adapté doc-tech (PNJ/MJ supprimés)"
+      - "Step 2.0c : ajout checklists API-DOC et PROCESS-DOC"
+      - "Old format deprecated : .docs/comments/ → .wip/comments/"
   - version: 4.5
     date: 2026-02-20
     changes:
@@ -69,14 +77,14 @@ Evaluate text through reader personas, scoring engagement/clarity/immersion/sati
 
 ## Persona Discovery **[1]**
 
-Scan in priority order (project > universe > global):
+Scan in priority order (project > client > global):
 
 ```bash
 # 1. Project personas (most specific)
-<univers>/<projet>/.templates/personas/*.yml
+<client>/<projet>/.templates/personas/*.yml
 
-# 2. Universe personas
-<univers>/.templates/personas/*.yml
+# 2. Client personas
+<client>/.templates/personas/*.yml
 
 # 3. Global personas (fallback)
 docs/templates/personas/*.yml
@@ -86,9 +94,9 @@ docs/templates/personas/*.yml
 
 | Document Type | Recommended Personas |
 |---------------|---------------------|
-| `novel` | player-immersive, casual-reader *(legacy)* |
-| `roleplaying` | gm-practitioner, player-immersive *(legacy)* |
-| `scenario` | gm-practitioner + project personas *(legacy)* |
+| `novel` | player-immersive, casual-reader *(legacy JdR)* |
+| `roleplaying` | gm-practitioner, player-immersive *(legacy JdR)* |
+| `scenario` | gm-practitioner + project personas *(legacy JdR)* |
 | `user-guide` | clarity-expert + project personas (end-user, domain-expert) |
 | `technical-doc` | technical-reviewer, clarity-expert + project personas |
 | `api-doc` | technical-reviewer + project personas (developer) |
@@ -166,7 +174,7 @@ Si persona définit `loading_strategy: "from_bank_yml"` :
 1. **Termes re-définis** : un terme technique ou métier reçoit-il sa définition complète alors qu'il a déjà été introduit dans un chapitre antérieur ? → Flag 🟡 Section 1 `[REDUNDANCY]` avec suggestion de renvoi
 2. **Procédures répétées** : une procédure déjà documentée est-elle re-décrite intégralement (au lieu d'un renvoi) ? → Flag 🟡 Section 1 `[REDUNDANCY]`
 3. **Avertissements répétés** : un encadré ⚠️ Attention apparaît-il pour un risque déjà signalé dans un chapitre antérieur ? → Flag 🟡 Section 1 `[REDUNDANCY]`
-4. **Introductions redondantes** : des formulations d'introduction génériques identiques apparaissent-elles dans plusieurs chapitres ? → Flag 🟡 Section 2 comme pattern systémique
+4. **Introductions génériques répétées** : des formulations d'introduction identiques apparaissent-elles dans plusieurs chapitres ? → Flag 🟡 Section 2 comme pattern systémique
 
 **Impact scoring :** ≥3 redondances dans un même chapitre = Clarté -1pt (information noyée dans les répétitions).
 
@@ -197,7 +205,27 @@ Si persona définit `loading_strategy: "from_bank_yml"` :
 | T4 | **Cohérence terminologique** : Les termes techniques sont-ils utilisés de façon cohérente avec le glossaire et les chapitres précédents ? | Incohérences ou "terminologie cohérente" |
 | T5 | **Prérequis explicites** : Les dépendances et prérequis sont-ils clairement listés en début de section ? | Prérequis manquants ou "tous explicites" |
 
-**Impact sur le scoring :** Les réponses négatives à la checklist DOIVENT se refléter dans les scores correspondants. Un chapitre avec des passages "tell" identifiés ne peut pas avoir Immersion > 16. Un chapitre sans exemples chiffrés ne peut pas avoir Clarté > 14. Un guide utilisateur avec étapes multi-actions ne peut pas avoir Clarté > 14. Un doc technique avec assertions non vérifiables ne peut pas avoir Clarté > 12.
+#### Chapitres API-DOC (documentation API, endpoints, SDK)
+
+| # | Question | Réponse attendue |
+|---|----------|-----------------|
+| A1 | **Exhaustivité endpoints** : Chaque endpoint documenté a-t-il : méthode, URL, paramètres, corps, réponse, codes d'erreur ? Lister les manques. | Manques ou "tous complets" |
+| A2 | **Exemples cURL/code** : Chaque endpoint a-t-il au moins un exemple d'appel réel (avec valeurs non-placeholder) ? | Endpoints sans exemple ou "tous illustrés" |
+| A3 | **Authentification** : Les prérequis d'auth (token, header, scope) sont-ils explicites pour chaque endpoint ? | Manques ou "tous spécifiés" |
+| A4 | **Codes d'erreur** : Les erreurs spécifiques (4xx, 5xx) sont-elles documentées avec cause et solution ? | Erreurs manquantes ou "toutes couvertes" |
+| A5 | **Versioning** : La version API est-elle indiquée ? Les breaking changes sont-ils signalés ? | Manques ou "versioning clair" |
+
+#### Chapitres PROCESS-DOC (workflows métier, SOP, procédures)
+
+| # | Question | Réponse attendue |
+|---|----------|-----------------|
+| P1 | **Acteurs identifiés** : Chaque étape du processus indique-t-elle clairement qui réalise l'action (rôle ou personne) ? | Étapes sans responsable ou "tous identifiés" |
+| P2 | **Déclencheur et conditions** : Le processus indique-t-il clairement quand il démarre et quelles conditions d'entrée sont requises ? | Manques ou "déclencheur clair" |
+| P3 | **Points de décision** : Les embranchements (si/sinon, conditions) sont-ils documentés avec les deux chemins ? | Points non documentés ou "tous couverts" |
+| P4 | **Livrables** : Chaque étape produit-elle un livrable ou un état vérifiable identifiable ? | Étapes sans livrable ou "tous définis" |
+| P5 | **Escalade et exceptions** : Les cas hors-procédure sont-ils documentés avec une procédure d'escalade ? | Manques ou "exceptions couvertes" |
+
+ Les réponses négatives à la checklist DOIVENT se refléter dans les scores correspondants. Un chapitre sans exemples chiffrés ne peut pas avoir Clarté > 14. Un guide utilisateur avec étapes multi-actions ne peut pas avoir Clarté > 14. Un doc technique avec assertions non vérifiables ne peut pas avoir Clarté > 12. Une API sans exemples d'appel réels ne peut pas avoir Clarté > 12. Un process-doc sans acteurs identifiés ne peut pas avoir Clarté > 13.
 
 ---
 
@@ -261,7 +289,7 @@ Pour chaque persona, vérifier `expectations.deal_breakers`:
 
 **Weighted by persona relevance:**
 - Project personas: weight 1.0 (most relevant)
-- Universe personas: weight 0.8
+- Client personas: weight 0.8
 - Global personas: weight 0.5
 
 ```python
