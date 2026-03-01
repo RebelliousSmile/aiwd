@@ -1,49 +1,76 @@
 ---
 name: extract-glossaire
-description: Extrait le vocabulaire technique et métier d'un projet et produit glossaire.md — termes bruts depuis le code et les docs.
-version: 1.0
+description: Extrait le vocabulaire technique et métier d'un projet et produit glossaire.md — termes bruts depuis le code et les docs, organisés par catégorie.
+version: 1.1
 ---
 
 # Extract Glossaire
 
-À partir de l'inventaire partagé par `aidw-collector` et des fichiers du projet, produis `aidw-collector/dest/glossaire.md`.
+À partir du contexte d'inventaire partagé par `aidw-collector` (Step 0) et des fichiers du projet, produis `aidw-collector/dest/glossaire.md`.
+
+Utiliser le domaine et la stack détectés en Step 0 pour cibler en priorité les dossiers et modules métier du projet.
 
 ## Sources à lire
 
-1. Noms de fichiers, dossiers, modules (vocabulaire structurel)
-2. Noms de classes, fonctions, variables métier (pas les utilitaires génériques)
-3. Traductions / fichiers i18n (termes affichés à l'utilisateur)
-4. Commentaires et docstrings
-5. Docs existantes (README, wiki, specs)
-6. Routes et noms d'endpoints API
-7. Noms de tables/collections de base de données
+Dans cet ordre, en filtrant sur les termes **métier et techniques spécifiques** (pas les utilitaires génériques) :
 
-## Ce qu'il faut extraire
+1. Noms de classes, fonctions, variables métier (ex: `InvoiceProcessor`, `OrderStatus`)
+2. Noms de fichiers, dossiers, modules (vocabulaire structurel)
+3. Routes et noms d'endpoints API
+4. Noms de tables/collections de base de données
+5. Fichiers i18n / traductions (termes affichés à l'utilisateur)
+6. Commentaires et docstrings
+7. Docs existantes (README, wiki, specs)
 
-Pour chaque terme :
-- **Forme exacte** telle qu'elle apparaît dans le code (casse respectée)
-- **Contexte d'usage** : dans quel module, pour quoi
-- **Définition** : inférée depuis le code et les docs, ou `[À COMPLÉTER]`
-
-Priorité aux termes **métier** (domaine de l'application) plutôt que techniques génériques (`handleClick`, `useState`…).
+**Exclure** : termes purement génériques sans sens spécifique au projet (`handleClick`, `useState`, `HTTP`, `JSON`, `null`…) — sauf s'ils ont un sens particulier ici.
 
 ## Output : `aidw-collector/dest/glossaire.md`
 
 ```markdown
 # Glossaire — [Nom Projet]
 
-| Terme | Définition | Source |
-|-------|-----------|--------|
-| [terme exact] | [définition inférée] | [fichier ou module] |
+## Termes Métier
 
-## Termes à valider avec les stakeholders
+| Terme | Contexte | Définition | Source |
+|-------|---------|-----------|--------|
+| [terme exact] | [module ou dossier] | [définition inférée — sinon À COMPLÉTER] | [fichier] |
+
+## Termes Techniques Spécifiques
+
+{termes techniques qui ont un sens particulier dans CE projet — pas les généralités}
+
+| Terme | Contexte | Définition | Source |
+|-------|---------|-----------|--------|
+| [terme exact] | [module ou dossier] | [définition inférée — sinon À COMPLÉTER] | [fichier] |
+
+## Termes UI
+
+{labels, libellés, noms d'écrans affichés à l'utilisateur — depuis i18n ou templates}
+
+| Terme affiché | Correspondance code | Définition | Source |
+|---------------|---------------------|-----------|--------|
+| [label UI] | `[clé i18n ou variable]` | [ce que ça désigne] | [fichier] |
+
+## Acronymes
+
+| Acronyme | Signification | Définition | Source |
+|----------|---------------|-----------|--------|
+| [ACRONYME] | [forme longue] | [définition — sinon À COMPLÉTER] | [fichier] |
+
+## Termes à Valider
+
+{termes dont la définition est incertaine — à confirmer avec les stakeholders}
 
 - **[terme]** : [pourquoi la définition est incertaine]
+
+---
+**Sources :** [liste des fichiers lus]
+**Màj :** YYYY-MM-DD
 ```
 
 ## Règles
 
-- Termes bruts : respecter la casse du code (`userId`, pas `User ID`)
-- Minimum 15 termes, maximum non limité
-- Si un terme apparaît partout sans définition claire → section "À valider"
-- Ne pas inclure les termes purement techniques génériques (HTTP, JSON, null…) sauf s'ils ont un sens spécifique dans ce projet
+1. **Casse exacte du code** — `userId` pas `User ID`, `OrderStatus` pas `Order Status`
+2. **Métier avant technique** — en cas de doute sur l'inclusion, privilégier les termes du domaine
+3. **Définition incertaine → "À valider"** — ne jamais inventer une définition ; si le sens n'est pas clair depuis les sources → section "Termes à Valider"
+4. **Toutes les catégories obligatoires** — si une catégorie n'a aucun terme, écrire `Aucun terme identifié`
