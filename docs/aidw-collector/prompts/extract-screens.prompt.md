@@ -23,50 +23,7 @@ Dans cet ordre de priorité :
 
 ## Output : `aidw-collector/dest/screens.md`
 
-```markdown
-# Inventaire des Écrans — [Nom Projet]
-
-## Vue d'Ensemble
-
-{tableau sommaire avant les fiches détaillées — une ligne par écran}
-
-| Module | Écran | Route | Accès |
-|--------|-------|-------|-------|
-| [module] | [nom écran] | [URL] | [public | rôle(s)] |
-
-## Composants Partagés
-
-{navigation, sidebar, header, footer — éléments présents sur plusieurs écrans}
-
-- **[Composant]** : [description, écrans concernés]
-
----
-
-## Module : [Nom]
-
-### [Nom de l'écran]
-
-- **Route :** [URL — sinon À COMPLÉTER]
-- **Accès :** [public | authentifié | rôle(s) — si extrait-access disponible, utiliser ses données]
-- **Description :** [à quoi sert cet écran — 2 lignes max]
-
-**Éléments visibles :**
-- [champ / bouton / tableau / formulaire]
-- [comportement associé si connu]
-
-**Actions disponibles :**
-- [action] → [résultat / redirection / message]
-
-**Messages système :**
-- Succès : [depuis i18n ou code — sinon À COMPLÉTER]
-- Erreur : [depuis i18n ou code — sinon À COMPLÉTER]
-
-**Notes :** [comportement conditionnel, validation, cas limite — sinon omettre]
-
----
-**Sources :** [liste des fichiers lus]
-**Màj :** YYYY-MM-DD
-```
+Charger `@aidw-collector/templates/screens.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites des sources. Dupliquer les blocs d'écran autant que nécessaire. Pour les grandes apps (> 20 écrans), documenter le flux principal et noter `[N écrans au total — voir router]`. Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente.
 
 ## Règles
 

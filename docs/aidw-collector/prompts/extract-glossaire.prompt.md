@@ -26,47 +26,7 @@ Dans cet ordre, en filtrant sur les termes **métier et techniques spécifiques*
 
 ## Output : `aidw-collector/dest/glossaire.md`
 
-```markdown
-# Glossaire — [Nom Projet]
-
-## Termes Métier
-
-| Terme | Contexte | Définition | Source |
-|-------|---------|-----------|--------|
-| [terme exact] | [module ou dossier] | [définition inférée — sinon À COMPLÉTER] | [fichier] |
-
-## Termes Techniques Spécifiques
-
-{termes techniques qui ont un sens particulier dans CE projet — pas les généralités}
-
-| Terme | Contexte | Définition | Source |
-|-------|---------|-----------|--------|
-| [terme exact] | [module ou dossier] | [définition inférée — sinon À COMPLÉTER] | [fichier] |
-
-## Termes UI
-
-{labels, libellés, noms d'écrans affichés à l'utilisateur — depuis i18n ou templates}
-
-| Terme affiché | Correspondance code | Définition | Source |
-|---------------|---------------------|-----------|--------|
-| [label UI] | `[clé i18n ou variable]` | [ce que ça désigne] | [fichier] |
-
-## Acronymes
-
-| Acronyme | Signification | Définition | Source |
-|----------|---------------|-----------|--------|
-| [ACRONYME] | [forme longue] | [définition — sinon À COMPLÉTER] | [fichier] |
-
-## Termes à Valider
-
-{termes dont la définition est incertaine — à confirmer avec les stakeholders}
-
-- **[terme]** : [pourquoi la définition est incertaine]
-
----
-**Sources :** [liste des fichiers lus]
-**Màj :** YYYY-MM-DD
-```
+Charger `@aidw-collector/templates/glossaire.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites des sources. Dupliquer les lignes de tableau autant que nécessaire. Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente.
 
 ## Règles
 

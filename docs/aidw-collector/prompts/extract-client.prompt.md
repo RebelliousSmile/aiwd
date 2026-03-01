@@ -21,49 +21,7 @@ Dans cet ordre de priorité (source plus haute = prioritaire, écrase les infér
 
 ## Output : `aidw-collector/dest/CLIENT.md`
 
-Produire le fichier suivant. Les annotations entre `{` `}` indiquent comment trouver ou inférer chaque champ — ne pas les inclure dans la sortie.
-
-```markdown
-# Client : [nom-kebab] — [Nom Officiel]
-{nom-kebab = identifiant court dérivé du nom officiel, ex: cerascan, generation-pdf}
-
-## Contexte
-
-[Secteur / domaine métier — sinon À COMPLÉTER]
-
-[Description de l'organisation et objet du produit — orienté utilisateur : ce que le produit
-fait pour eux, 2-3 phrases max]
-
-## Audience Cible
-
-- **Primaire :** [profil, niveau technique, contexte d'usage — sinon À COMPLÉTER]
-- **Secondaire :** [profil — si identifiable, sinon À COMPLÉTER]
-
-**Niveau technique :** [débutant | intermédiaire | expert | À COMPLÉTER]
-{inférer depuis : types génériques, patterns avancés (DI, CQRS, monades...) → expert ;
-config complexe, multi-services → intermédiaire ; scripts simples, CLI basique → débutant}
-
-## Ton & Style
-
-- **Ton :** [ton observé dans les docs existants — sinon inférer depuis README — sinon À COMPLÉTER]
-- **Conventions :** [tutoiement/vouvoiement, langue(s) — sinon À COMPLÉTER]
-- **Formats préférés :** [code, tableaux, listes, prose — sinon À COMPLÉTER]
-
-## Contraintes
-
-### Techniques
-- [contrainte technique identifiée — sinon À COMPLÉTER]
-
-### Métier
-- [contrainte métier identifiée — sinon À COMPLÉTER]
-
-### Légales / Réglementaires
-- [RGPD, licences, certifications — sinon À COMPLÉTER]
-
----
-**Sources :** [liste des fichiers lus]
-**Màj :** YYYY-MM-DD
-```
+Charger `@aidw-collector/templates/CLIENT.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites des sources. Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente des sources.
 
 ## Règles
 

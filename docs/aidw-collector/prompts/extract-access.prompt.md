@@ -23,64 +23,7 @@ Dans cet ordre de priorité :
 
 ## Output : `aidw-collector/dest/access-matrix.md`
 
-Les annotations `{ }` indiquent comment trouver chaque champ — ne pas les inclure dans la sortie.
-
-```markdown
-# Matrice Rôles & Accès — [Nom Projet]
-
-## Mécanisme d'Authentification
-
-{type de mécanisme depuis config OAuth/JWT/session — sinon À COMPLÉTER}
-
-- **Type :** [JWT | Session | OAuth2 | SSO | Basic | À COMPLÉTER]
-- **Provider :** [Keycloak | Auth0 | Passport | custom | À COMPLÉTER]
-- **Token / Claims :** [champs utilisés pour identifier le rôle — sinon À COMPLÉTER]
-
-## Rôles Identifiés
-
-{noms exacts depuis le code, casse respectée : ADMIN, Operator, client}
-
-| Rôle | Description | Identifiant code | Source |
-|------|-------------|-----------------|--------|
-| [Rôle] | [description — sinon À COMPLÉTER] | `[ROLE_CONSTANT]` | [fichier] |
-
-## Matrice d'Accès
-
-{si > 5 rôles : créer un tableau par domaine fonctionnel plutôt qu'un seul tableau large}
-
-| Fonctionnalité / Écran | Public | [Rôle 1] | [Rôle 2] | [Rôle 3] |
-|------------------------|--------|----------|----------|----------|
-| [fonctionnalité] | ✓/✗ | ✓/✗ | ✓/✗ | ✓/✗ |
-
-Cellule `?` = règle d'accès non trouvée dans les sources → signaler comme gap.
-
-## Comportements Différenciés par Rôle
-
-{même route, contenu conditionnel selon le rôle}
-
-### [Fonctionnalité / Écran]
-
-| Rôle | Comportement | Source |
-|------|-------------|--------|
-| [Rôle 1] | [ce qu'il voit / peut faire] | [fichier] |
-| [Rôle 2] | [ce qu'il voit / peut faire] | [fichier] |
-
-## Gestion des Accès Non Autorisés
-
-- **Redirection :** [vers quelle page — sinon À COMPLÉTER]
-- **Message affiché :** [libellé — sinon À COMPLÉTER]
-- **Comportement API :** [code HTTP retourné — ex: 401, 403 — sinon À COMPLÉTER]
-
-## Gaps Identifiés
-
-| Fonctionnalité | Rôle(s) concerné(s) | Règle non trouvée |
-|---------------|----------------------|-------------------|
-| [fonctionnalité] | [rôle] | [description du gap] |
-
----
-**Sources :** [liste des fichiers lus]
-**Màj :** YYYY-MM-DD
-```
+Charger `@aidw-collector/templates/access-matrix.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites des sources. Si > 5 rôles, créer un tableau par domaine fonctionnel. Cellule `?` = règle non trouvée → reporter dans "Gaps Identifiés". Ne laisser `[À COMPLÉTER]` que si l'information est réellement absente.
 
 ## Règles
 

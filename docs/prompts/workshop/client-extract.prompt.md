@@ -273,170 +273,19 @@ architecture-frontend.md (120 lignes)
 
 ### 8. Génération des fichiers
 
-#### CLIENT.md (template)
+#### CLIENT.md
 
 **IMPORTANT :** Ce fichier contient le contexte métier, audience cible, et contraintes projet.
 
-```markdown
-# Client: [Nom Client]
+Charger `@aidw-collector/templates/CLIENT.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites. Ajouter `**Lignes:** [N]/250` en pied de page.
 
-## Contexte Métier
+#### glossaire.md
 
-**Secteur:** [industrie, domaine]
-**Activité:** [description activité principale]
+Charger `@aidw-collector/templates/glossaire.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites. Dupliquer les lignes de tableau autant que nécessaire. Ajouter `**Lignes:** [N]/250` en pied de page.
 
-[Paragraphe contexte]
+#### architecture.md
 
-## Audience Cible
-
-### Utilisateurs Finaux
-
-| Type | Profil | Besoins |
-|------|--------|---------|
-| [Type 1] | [description] | [attentes principales] |
-| [Type 2] | [description] | [attentes principales] |
-
-### Parties Prenantes
-
-- **Décideurs:** [rôles]
-- **Équipes techniques:** [rôles]
-- **Support:** [rôles]
-
-## Contraintes Projet
-
-### Techniques
-- [Contrainte 1]
-- [Contrainte 2]
-
-### Métier
-- [Contrainte 1]
-- [Contrainte 2]
-
-### Réglementaires
-- [RGPD, normes, certifications]
-
-## Objectifs Documentation
-
-**Document principal:** [Type : guide utilisateur / specs techniques / API / ...]
-**Livrables attendus:** [formats, volumes]
-**Délais:** [si applicable]
-
-## Tone & Style
-
-**Ton attendu:** [formel / accessible / technique / ...]
-**Niveau technique:** [débutant / intermédiaire / expert]
-**Exemples à privilégier:** [concrets / abstraits / screenshots / code]
-
----
-**Lignes:** [N]/250
-**Màj:** [date]
-**Sources:** [liste fichiers]
-```
-
-#### glossaire.md (template)
-
-```markdown
-# Glossaire: [Nom Client]
-
-## Termes Métier
-
-| Terme | Définition | Anglais |
-|-------|------------|---------|
-| [terme1] | [définition] | [term1] |
-
-## Termes Techniques
-
-| Terme | Définition | Contexte |
-|-------|------------|----------|
-| [terme1] | [définition] | [où utilisé] |
-
-## Acronymes
-
-| Acronyme | Signification | Définition |
-|----------|---------------|------------|
-| API | Application Programming Interface | [définition] |
-
-## Composants Système
-
-| Nom | Type | Description |
-|-----|------|-------------|
-| [composant1] | [service/module/API] | [rôle] |
-
-## Termes à Éviter
-
-| Incorrect | Correct | Raison |
-|-----------|---------|--------|
-| [terme faux] | [terme juste] | [explication] |
-
----
-**Lignes:** [N]/250
-**Màj:** [date]
-```
-
-#### architecture.md (template)
-
-```markdown
-# Architecture: [Nom Client/Produit]
-
-## Vue d'Ensemble
-
-```
-[Diagramme architecture en ASCII art ou Mermaid]
-
-[Frontend] <--> [API Gateway] <--> [Backend Services]
-                                   [Database]
-```
-
-**Stack Technique:**
-- Frontend: [technologies]
-- Backend: [technologies]
-- Base de données: [type, version]
-- Infrastructure: [cloud, on-premise]
-
-## Composants Principaux
-
-### [Composant 1]
-
-**Type:** [service / module / API / ...]
-**Responsabilités:** [rôle]
-**Technologies:** [stack]
-**Dépendances:** [autres composants]
-
-[Description détaillée]
-
-### [Composant 2]
-
-...
-
-## Flux de Données
-
-### [Flux 1]
-
-```
-[User] → [Frontend] → [API] → [Service A] → [DB]
-                              ↓
-                         [Service B] (async)
-```
-
-**Étapes:**
-1. [Étape 1]
-2. [Étape 2]
-
-## Intégrations Externes
-
-| Système | Type | Usage | Criticité |
-|---------|------|-------|-----------|
-| [Système 1] | API REST | [usage] | Haute |
-
-## Contraintes Techniques
-
-- [Contrainte 1]
-- [Contrainte 2]
-
----
-**Lignes:** [N]/250
-**Sources:** [fichiers]
-```
+Charger `@aidw-collector/templates/architecture.md` et remplacer chaque `[À COMPLÉTER]` par les données extraites. Dupliquer les lignes de tableau et les blocs de composants autant que nécessaire. Ajouter `**Lignes:** [N]/250` en pied de page.
 
 #### requirements.md (template)
 
