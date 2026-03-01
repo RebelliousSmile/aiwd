@@ -1,0 +1,70 @@
+# bank.yml - Guide Partenaire CERASCAN
+# Documentation à destination des distributeurs/partenaires commerciaux
+
+# ===================================================================
+# IDENTIFICATION
+# ===================================================================
+document:
+  name: "Guide Partenaire CERASCAN"
+  client: "cerascan"
+  type: "user-guide"  # Documentation utilisateur/partenaire
+
+# ===================================================================
+# RESSOURCES OBLIGATOIRES
+# ===================================================================
+
+# Style d'écriture
+output-style:
+  global: "docs/output-styles/user-friendly.md"
+
+# ===================================================================
+# DOCUMENTATION CLIENT
+# ===================================================================
+
+docs:
+  # --- Obligatoires ---
+  client: "../.docs/CLIENT.md"
+  glossaire: "../.docs/glossaire.md"
+  
+  # --- Documentation métier (vue partenaire limitée) ---
+  users: "../.docs/users.md"
+  qr-system: "../.docs/qr-system.md"
+  
+  # Note : workflows.md et requirements.md omis (trop détaillés pour partenaires)
+  # Les partenaires ont une interface limitée : livraison CSV + récupération PDFs
+
+# Overview
+overview: "overview.md"
+
+# Table des matières
+toc:
+  fichier: ".toc/INDEX.md"
+
+# Personas pour review (comment.prompt.md)
+personas:
+  - platform-admin   # Lit TOUT (admin + partenaire + commercial)
+  - showroom-owner   # Lit partenaire + commercial
+
+# ===================================================================
+# EXPORT ICML
+# ===================================================================
+
+icml:
+  chapitres-source: "chapitres/"
+  chapitres-order:
+    # À définir après génération TOC
+  output: "output/guide-partenaire.icml"
+
+# ===================================================================
+# METADONNEES
+# ===================================================================
+metadata:
+  auteur: "fxgui"
+  date-creation: "2026-02-28"
+  version: "1.0"
+  statut: "draft"
+  tags:
+    - "partenaire"
+    - "commercial"
+    - "onboarding"
+    - "distributeur"

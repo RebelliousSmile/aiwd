@@ -1,0 +1,70 @@
+# bank.yml - Guide Commercial Showroom CERASCAN
+# Documentation à destination des commerciaux utilisant l'application au quotidien
+
+# ===================================================================
+# IDENTIFICATION
+# ===================================================================
+document:
+  name: "Guide Commercial Showroom CERASCAN"
+  client: "cerascan"
+  type: "user-guide"  # Documentation utilisateur quotidien
+
+# ===================================================================
+# RESSOURCES OBLIGATOIRES
+# ===================================================================
+
+# Style d'écriture
+output-style:
+  global: "docs/output-styles/user-friendly.md"
+
+# ===================================================================
+# DOCUMENTATION CLIENT
+# ===================================================================
+
+docs:
+  # --- Obligatoires ---
+  client: "../.docs/CLIENT.md"
+  glossaire: "../.docs/glossaire.md"
+  
+  # --- Documentation métier (vue commercial limitée) ---
+  users: "../.docs/users.md"
+  
+  # Note : qr-system, workflows, architecture omis (hors périmètre commercial)
+  # Les commerciaux utilisent uniquement le front : catalogue, listes d'envie
+
+# Overview
+overview: "overview.md"
+
+# Table des matières
+toc:
+  fichier: ".toc/INDEX.md"
+
+# Personas pour review (comment.prompt.md)
+personas:
+  - platform-admin   # Lit TOUT (admin + partenaire + commercial)
+  - showroom-owner   # Lit partenaire + commercial
+  - showroom-staff   # Lit commercial UNIQUEMENT
+
+# ===================================================================
+# EXPORT ICML
+# ===================================================================
+
+icml:
+  chapitres-source: "chapitres/"
+  chapitres-order:
+    # À définir après génération TOC
+  output: "output/guide-commercial.icml"
+
+# ===================================================================
+# METADONNEES
+# ===================================================================
+metadata:
+  auteur: "fxgui"
+  date-creation: "2026-02-28"
+  version: "1.0"
+  statut: "draft"
+  tags:
+    - "commercial"
+    - "vendeuse"
+    - "showroom"
+    - "quotidien"

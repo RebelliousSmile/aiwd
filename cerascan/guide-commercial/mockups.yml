@@ -1,0 +1,82 @@
+# mockups.yml - Mockups UI annotés pour le guide commercial CERASCAN
+# Usage : python scripts/generate-mockups.py --project "cerascan/guide-commercial"
+
+theme:
+  primary: "#1E3A5F"    # Navy (header, nav)
+  accent:  "#2578CC"    # Bleu (boutons, liens, accent)
+  danger:  "#DC3232"    # Rouge (bouton valider déconnexion)
+  success: "#27AE60"    # Vert (non utilisé ch02)
+  brand:   "CERASCAN"
+  width:   900
+  height:  1100
+  footer:  "Interface CERASCAN — Guide Commercial 2026"
+
+mockups:
+
+  # ── Chapitre 02 ────────────────────────────────────────────────────────────
+
+  - id: "ch02-page-connexion"
+    type: login
+    output: "chapitres/screenshots/guide-commercial-ch02-page-connexion.png"
+    login:
+      email: "julie@showroom-ceramique.fr"
+      password: true
+      remember: true
+      submit: "Se connecter"
+      forgot_password: "Mot de passe oublié ?"
+    annotations:
+      - {id: 1, element: email}
+      - {id: 2, element: password}
+      - {id: 3, element: remember}
+      - {id: 4, element: submit}
+    # Coordonnées pour import-screenshot.py (image réelle 900×1100px)
+    # badge cx/cy = centre cercle rouge, tip_x/tip_y = pointe de flèche
+    real_annotations:
+      - {id: 1, cx: 30,  cy: 330, tip_x: 100, tip_y: 330}   # Champ Email
+      - {id: 2, cx: 870, cy: 420, tip_x: 800, tip_y: 420}   # Champ Mot de passe
+      - {id: 3, cx: 30,  cy: 510, tip_x: 100, tip_y: 510}   # Case Rester connecté
+      - {id: 4, cx: 870, cy: 580, tip_x: 800, tip_y: 580}   # Bouton Se connecter
+
+  - id: "ch02-menu-profil"
+    type: menu
+    output: "chapitres/screenshots/guide-commercial-ch02-menu-profil.png"
+    menu:
+      user_name: "Julie Martin"
+      user_role: "Commercial Senior"
+      active_tab: "Catalogue"
+      tabs:
+        - "Catalogue"
+        - "Commandes"
+        - "Clients"
+        - "Statistiques"
+      items:
+        - label: "Mon Profil"
+        - label: "Paramètres"
+        - label: "Déconnexion"
+          danger: true
+    annotations:
+      - {id: 1, element: user_icon}
+      - {id: 2, element: dropdown}
+      - {id: 3, element: danger_item}
+    real_annotations:
+      - {id: 1, cx: 870, cy: 50,  tip_x: 870, tip_y: 80}    # Icône utilisateur (coin haut droite)
+      - {id: 2, cx: 30,  cy: 250, tip_x: 690, tip_y: 250}   # Menu déroulant
+      - {id: 3, cx: 30,  cy: 370, tip_x: 690, tip_y: 370}   # Bouton Déconnexion
+
+  - id: "ch02-popup-deconnexion"
+    type: popup
+    output: "chapitres/screenshots/guide-commercial-ch02-popup-deconnexion.png"
+    popup:
+      message: "Êtes-vous sûr(e) de vouloir vous déconnecter ?"
+      sub_message: "Votre session sera fermée et vous devrez vous reconnecter pour accéder au catalogue."
+      cancel: "Annuler"
+      confirm: "Valider"
+      confirm_danger: true
+    annotations:
+      - {id: 1, element: message}
+      - {id: 2, element: cancel}
+      - {id: 3, element: confirm}
+    real_annotations:
+      - {id: 1, cx: 30,  cy: 460, tip_x: 150, tip_y: 460}   # Message confirmation
+      - {id: 2, cx: 30,  cy: 620, tip_x: 220, tip_y: 620}   # Bouton Annuler
+      - {id: 3, cx: 870, cy: 620, tip_x: 680, tip_y: 620}   # Bouton Valider

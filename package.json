@@ -1,0 +1,12 @@
+{
+  "name": "generationpdf",
+  "version": "1.0.0",
+  "description": "Outils Node.js pour le pipeline de génération documentaire",
+  "private": true,
+  "scripts": {
+    "mermaid": "mmdc"
+  },
+  "dependencies": {
+    "@mermaid-js/mermaid-cli": "^11.4.2"
+  }
+}

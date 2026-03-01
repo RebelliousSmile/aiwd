@@ -1,0 +1,25 @@
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Dépôts Git imbriqués (gérés séparément)
+docs/
+scripts/
+cerascan/documentation/
+
+# Outputs générés (ICML, images, InDesign) — sauf releases/
+**/output/*.icml
+**/output/ascii-images/
+**/output/indesign/
+**/output/deck/
+**/output/fiches/
+# Mais garder les releases PDF
+!**/output/releases/
+
+# Temp
+_temp/
+*.tmp
