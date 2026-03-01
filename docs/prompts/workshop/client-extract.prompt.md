@@ -1,6 +1,7 @@
 ---
 name: client-extract
 description: Extrait et organise les informations client/projet depuis des sources brutes vers des fichiers thématiques structurés pour documentation technique.
+argument-hint: "<client> [--update] [--force] [--project <nom>] (ex: cerascan --update)"
 ---
 
 # Client Extract
@@ -13,8 +14,10 @@ Transformer des fichiers sources bruts (PDFs, captures, notes, documentation exi
 
 ## Entrées
 
-- **Client cible** : $1 (identifiant : ex: cerascan, acme-corp, client-x)
-- **Dossier sources** : $2 (chemin vers `<client>/.docs/sources/`)
+`$ARGUMENTS` — format : `<client> [options]`
+
+- **Client cible** : premier token (identifiant : ex: cerascan, acme-corp, client-x)
+- **Dossier sources** : `<client>/.docs/sources/` (chemin déduit automatiquement)
 - **Options** :
   - `--update` : Mode incrémental, enrichit les fichiers existants
   - `--force` : Régénère tout même si fichiers existent
@@ -61,8 +64,8 @@ Avant toute extraction, vérifier pour chaque fichier source :
 
 **Mode `--update` :**
 - [ ] Lister les fichiers `.docs/` existants
-- [ ] Identifier les sources déjà traitées (via métadonnées)
-- [ ] Ne traiter que les nouvelles sources
+- [ ] Lire `<client>/.docs/.extract-log.md` (créé à chaque run) pour identifier les sources déjà traitées
+- [ ] Ne traiter que les sources absentes du log ou modifiées depuis la date notée
 
 **Si problème détecté :**
 ```
@@ -97,7 +100,8 @@ Lire tous les fichiers sources validés. Noter :
 - Ex: "Le composant de traitement (*processor*) gère..."
 
 **Gestion captures d'écran :**
-- Analyser les images UI pour extraire :
+- **Limitation** : Si les images ne sont pas chargées dans le contexte (non accessibles via `@`), ne pas tenter de les analyser — demander à l'utilisateur : "Les captures `sources/captures/*.png` ne sont pas accessibles. Décris les écrans principaux en quelques phrases, ou partage-les dans le chat."
+- Si accessibles, analyser pour extraire :
   - Noms d'écrans/pages
   - Libellés de boutons/menus
   - Workflows visuels
@@ -148,7 +152,7 @@ Valides-tu cette liste ? (oui / modifier)
 
 ### 4. Extraction par thème
 
-Pour chaque thème validé (dans l'ordre de priorité), extraire les informations pertinentes.
+Pour chaque thème validé (dans l'ordre de priorité du tableau step 3), extraire les informations pertinentes.
 
 **Priorité d'extraction (garder) :**
 1. Termes métier uniques au domaine
@@ -264,6 +268,7 @@ architecture.md (250 lignes)
 architecture-backend.md (150 lignes)
 architecture-frontend.md (120 lignes)
 ```
+→ Si split accepté : mettre à jour l'INDEX.md et la validation finale pour lister les N sous-fichiers au lieu du fichier original.
 
 ### 8. Génération des fichiers
 
@@ -625,7 +630,7 @@ architecture-frontend.md (120 lignes)
 **Sources:** [fichiers]
 ```
 
-### 9. Génération INDEX.md
+### 9. Génération INDEX.md et log de traçabilité
 
 Créer un fichier index dans `<client>/.docs/INDEX.md` :
 
@@ -659,6 +664,17 @@ Créer un fichier index dans `<client>/.docs/INDEX.md` :
 ---
 **Généré par:** client-extract.prompt.md
 **Mode:** [création / mise à jour]
+```
+
+Créer également `<client>/.docs/.extract-log.md` (utilisé par `--update`) :
+
+```markdown
+# Extract Log: [Nom Client]
+
+| Fichier Source | Type | Date traitement | Thèmes extraits |
+|----------------|------|-----------------|-----------------|
+| [fichier1.pdf] | PDF | [date] | CLIENT, glossaire, architecture |
+| [capture1.png] | Image | [date] | users, workflows |
 ```
 
 ### 10. Rapport final
@@ -765,6 +781,6 @@ glossaire-technique.md (200 lignes)
 
 ---
 
-**Version:** 1.0
+**Version:** 1.1
 **Date:** 2026-02-28
 **Adapté de:** univers-extract.prompt.md
