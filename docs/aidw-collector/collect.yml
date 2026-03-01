@@ -1,0 +1,72 @@
+# AIDW Collector — Configuration
+
+# Remplir ce fichier avant de lancer client-extract.prompt.md
+# Les champs vides sont inférés automatiquement par le prompt
+
+project:
+  # Nom du projet (ex: "API v2", "Guide utilisateur CRM", "Documentation onboarding")
+  name: ""
+
+  # Type de documentation cible
+  # Options: technical-doc | user-guide | api-doc | process-doc
+  type: ""
+
+  # Langue principale du projet source (code + docs existants)
+  source_language: "fr"  # fr | en | autre
+
+  # Langue des fichiers de sortie souhaités
+  output_language: "fr"  # fr | en
+
+client:
+  # Nom du client ou de l'organisation
+  name: ""
+
+  # Secteur d'activité (optionnel — aide à inférer le ton et le vocabulaire)
+  sector: ""
+
+  # Audience principale pressentie (optionnel)
+  # Ex: "développeurs backend", "utilisateurs finaux non-techniques", "admins système"
+  audience: ""
+
+scope:
+  # Dossiers à analyser (relatifs à la racine du projet, séparés par des virgules)
+  # Laisser vide pour analyser tout le projet
+  include_dirs: ""
+
+  # Dossiers à exclure
+  exclude_dirs: "node_modules, .git, dist, build, __pycache__, .venv"
+
+  # Extensions de fichiers code à analyser (pour extraire le vocabulaire technique)
+  code_extensions: ".py, .ts, .js, .go, .java, .rs, .cs"
+
+  # Extensions de documents à analyser (pour extraire le contexte et les specs)
+  doc_extensions: ".md, .txt, .rst, .adoc"
+
+  # Inclure les PDFs existants ? (nécessite extract-pdf.py si oui)
+  include_pdfs: false
+
+# ===================================================================
+# OUTPUT — Fichiers produits par client-extract.prompt.md
+# ===================================================================
+# Correspondance exacte avec les entrées bank.yml → docs:
+# Commenter les lignes non pertinentes pour ce projet
+
+output:
+  # --- Obligatoires ---
+  CLIENT.md: true                  # → <client>/.docs/CLIENT.md
+  glossaire.md: true               # → <client>/.docs/glossaire.md
+
+  # --- Standard (tech projects) ---
+  architecture.md: true            # → <client>/.docs/architecture.md
+  screens.md: true                 # → <client>/.docs/screens.md       (app UI)
+  access-matrix.md: true           # → <client>/.docs/access-matrix.md (auth/rôles)
+  deployment.md: true              # → <client>/.docs/deployment.md
+
+  # --- AIDW ---
+  overview.md: true                # → <client>/<projet>/overview.md
+  bank.yml: true                   # → <client>/<projet>/bank.yml       (config suggérée)
+  INSTALL.md: true                 # → aidw-collector/output/INSTALL.md (instructions)
+
+  # Désactiver les fichiers non pertinents (ex: screens.md si pas d'UI)
+  # screens.md: false
+  # access-matrix.md: false
