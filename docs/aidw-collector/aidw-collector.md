@@ -1,7 +1,7 @@
 ---
 name: aidw-collector
-description: Analyse un projet (code + docs) et produit tous les fichiers .docs/ nécessaires à la documentation AIDW. Détecte automatiquement le nom du projet, son objet, son audience et sa stack. Exécute les extracteurs spécialisés séquentiellement, chacun informé par le contexte d'inventaire commun.
-version: 3.2
+description: Analyse un projet (code + docs) et produit tous les fichiers .docs/ nécessaires à la documentation AIDW. Détecte automatiquement le nom du projet, son objet, son audience et sa stack. Exécute les extracteurs spécialisés séquentiellement, résout les gaps par sources alternatives, et s'auto-évalue pour améliorer collect.yml.
+version: 3.3
 type: agent
 output: aidw-collector/dest/
 ---
@@ -136,7 +136,49 @@ Exécuter chaque extracteur retenu **dans l'ordre du tableau ci-dessus**.
 1. Annoncer : `→ extract-[nom] en cours…`
 2. Lire et exécuter : `@aidw-collector/prompts/extract-[nom].prompt.md`
 3. Produire le fichier dans `dest/[fichier].md`
-4. Signaler les `[À COMPLÉTER]` trouvés
+4. Passer immédiatement au **Step 2b — Gap Resolution** sur ce fichier
+
+---
+
+## Step 2b — Gap Resolution
+
+Après chaque fichier produit, avant de passer à l'extracteur suivant, traiter les `[À COMPLÉTER]` restants.
+
+### 2b-1. Classifier chaque gap
+
+| Priorité | Critère |
+|----------|---------|
+| **CRITIQUE** | Information sans laquelle un chapitre entier du guide ne peut pas être rédigé (ex: audience inconnue, fonctionnalité principale non documentée) |
+| **IMPORTANT** | Information incomplète — rédaction possible mais imprécise ou superficielle |
+| **MINEUR** | Enrichissement — n'affecte pas la qualité du guide si absent |
+
+### 2b-2. Tenter une résolution alternative
+
+Pour chaque gap **CRITIQUE** ou **IMPORTANT** :
+
+1. Identifier un type de source non encore consulté pouvant contenir l'information
+2. Lire cette source (max 2 tentatives par gap)
+3. Si trouvé → remplir le `[À COMPLÉTER]` et noter la source dans le fichier
+4. Si non trouvé après 2 tentatives → conserver `[À COMPLÉTER]` et passer à 2b-3
+
+Exemples de sources alternatives à consulter :
+- `CHANGELOG.md` / `HISTORY.md` → dates, versions, évolutions
+- `package.json` → scripts, dépendances, version
+- Fichiers de test → comportements attendus non documentés
+- Commentaires JSDoc / docstrings → descriptions de fonctions
+- Issues GitHub exportées / `TODO` dans le code → fonctionnalités planifiées
+
+### 2b-3. Rapport de gap par extracteur
+
+Après tentatives de résolution, afficher :
+
+```
+[extract-nom] — Gaps restants :
+  CRITIQUE  : N gaps — [liste courte]
+  IMPORTANT : N gaps — [liste courte]
+  MINEUR    : N gaps
+  Résolus par sources alternatives : N (sources utilisées : [liste])
+```
 
 ---
 
@@ -170,13 +212,13 @@ Produire `dest/INSTALL.md` avec le contenu suivant :
     cp aidw-collector/dest/glossaire.md     <client>/.docs/
     # [...] selon extracteurs retenus
 
-**Tableau des gaps :**
+**Tableau consolidé des gaps** (tous extracteurs confondus, par priorité) :
 
-| Priorité | Gap | Impact documentation |
-|----------|-----|---------------------|
-| CRITIQUE | [information manquante bloquante] | [sans elle, ce chapitre ne peut pas être écrit] |
-| IMPORTANT | [information incomplète] | [rédaction possible mais approximative] |
-| MINEUR | [À COMPLÉTER] non bloquant | [enrichissement futur] |
+| Priorité | Fichier | Gap | Source manquante |
+|----------|---------|-----|-----------------|
+| CRITIQUE | [fichier.md] | [information manquante] | [type de fichier à fournir] |
+| IMPORTANT | [fichier.md] | [information incomplète] | [type de fichier à fournir] |
+| MINEUR | [fichier.md] | [À COMPLÉTER] non bloquant | — |
 
 **Prochaine étape AIDW :**
 1. Copier les fichiers ci-dessus dans `<client>/.docs/`
@@ -186,13 +228,84 @@ Produire `dest/INSTALL.md` avec le contenu suivant :
 
 ---
 
+## Step 4 — Collector Self-Review
+
+Après la production complète, s'auto-évaluer et améliorer `collect.yml` pour les prochaines runs.
+
+### 4a. Score de couverture par fichier
+
+Pour chaque fichier produit, calculer :
+
+```
+[fichier].md  — [N] champs remplis / [M] total  →  [score]%  ([N gaps CRITIQUE])
+```
+
+Score global : moyenne pondérée (CRITIQUE compte double).
+
+Seuils :
+- ≥ 85% → Collecte satisfaisante
+- 70-84% → Collecte partielle — gaps importants à combler manuellement
+- < 70% → Collecte insuffisante — sources manquantes structurelles
+
+### 4b. Analyse des patterns de gaps
+
+Regrouper les gaps restants par **type de source manquante** :
+
+| Pattern | Gaps affectés | Source structurellement absente |
+|---------|-------------|--------------------------------|
+| Pas de tests e2e | userflows : étapes vides | `cypress/` ou `playwright/` |
+| Pas de fichier personas | CLIENT.md audience imprécise | `docs/personas.md` |
+| Pas de `.env.example` | deployment.md variables vides | Fichier à créer dans le projet |
+| Pas de user stories | requirements.md use cases vides | `docs/user-stories.md` |
+| [pattern détecté] | [gaps] | [source] |
+
+### 4c. Recommandations `collect.yml`
+
+Générer automatiquement les hints `collect.yml` à ajouter pour améliorer la prochaine run :
+
+```yaml
+# Suggestions aidw-collector (générées automatiquement — Step 4c)
+# Décommenter et adapter selon disponibilité
+
+# client:
+#   audience: "[valeur inférée depuis README/personas — à confirmer]"
+
+# scope:
+#   [extracteur]: false   # si non applicable au projet
+
+# custom_themes:
+#   [thèmes custom détectés et justifiés]
+```
+
+> Si le score global est ≥ 85% ET qu'aucun gap CRITIQUE ne subsiste → écrire directement les suggestions dans `collect.yml` (section `# Auto-hints — Step 4c`).
+> Si score < 85% OU gaps CRITIQUE → afficher les suggestions et attendre validation avant d'écrire.
+
+### 4d. Verdict final
+
+```
+=== Collector Self-Review ===
+Score global       : [X]%  ([Satisfaisante | Partielle | Insuffisante])
+Gaps CRITIQUE      : [N]  → [liste]
+Gaps IMPORTANT     : [N]
+Gaps MINEUR        : [N]
+collect.yml mis à jour : [oui / non — en attente validation]
+
+Recommandation : [phrase d'action directe]
+  ex: "Fournir tests Playwright ou fichier user-stories.md pour combler 3 gaps CRITIQUE dans userflows."
+  ex: "Collecte satisfaisante. Passer à write-user-guide.prompt.md."
+```
+
+---
+
 ## Règles
 
 1. **Extraire, pas inventer** — information absente → `[À COMPLÉTER]`, jamais inventer
 2. **Hints prioritaires** — `collect.yml` renseigné prend le dessus sur l'auto-détection
 3. **`dest/` comme sortie unique** — tous les fichiers produits vont dans `dest/`
 4. **Pas d'extracteur = pas de fichier** — ne pas créer `screens-*.md` si UI non détectée
-5. **Signaler les gaps** — chaque `[À COMPLÉTER]` dans un fichier → une ligne dans INSTALL.md
+5. **Gap Resolution avant abandon** — tenter 2 sources alternatives avant de déclarer un gap CRITIQUE non résolu
 6. **Termes bruts dans le glossaire** — casse exacte du code (`userId`, pas `User ID`)
-7. **Fichiers < 250 lignes** — si un extracteur produit plus de 250 lignes, splitter par module ou groupe (ex. `screens-public.md` + `screens-admin.md`). Signaler le split dans INSTALL.md.
-8. **Thèmes custom justifiés** — un thème custom doit être explicitement justifié dans INSTALL.md (pourquoi il ne rentre pas dans les 8 extracteurs standards)
+7. **Fichiers < 250 lignes** — si un extracteur produit plus de 250 lignes, splitter par module ou groupe. Signaler le split dans INSTALL.md.
+8. **Thèmes custom justifiés** — un thème custom doit être explicitement justifié dans INSTALL.md
+9. **Self-Review obligatoire** — Step 4 s'exécute toujours, même si tous les fichiers sont complets
+10. **collect.yml auto-update conservateur** — écrire automatiquement uniquement si score ≥ 85% et aucun gap CRITIQUE

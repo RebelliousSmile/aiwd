@@ -53,6 +53,18 @@ docs/aidw-collector/
 
 Chaque extracteur charge son template depuis `templates/` et remplace les `[À COMPLÉTER]` avec les données extraites du projet.
 
+## Mécanique interne
+
+L'agent suit 4 steps :
+
+1. **Inventaire** — détecte automatiquement le projet, la stack, l'UI, l'auth, le déploiement, les specs
+2. **Extraction** — lance chaque extracteur sélectionné, puis **Gap Resolution** (Step 2b) :
+   - Classifie chaque `[À COMPLÉTER]` en CRITIQUE / IMPORTANT / MINEUR
+   - Tente 2 sources alternatives avant de déclarer un gap non résolu
+   - Affiche un rapport de gap par extracteur
+3. **INSTALL.md** — rapport consolidé (fichiers produits, commandes de copie, tableau de gaps toutes priorités)
+4. **Self-Review** — s'auto-évalue (score de couverture), analyse les patterns de gaps structurels, génère des suggestions `collect.yml` pour améliorer la prochaine run. Si score ≥ 85% et aucun gap CRITIQUE : met à jour `collect.yml` automatiquement.
+
 ## Utilisation
 
 ### 1. Copier ce dossier dans le projet cible
@@ -73,21 +85,23 @@ Avec n'importe quel LLM (Claude, GPT, Gemini…) ayant accès aux fichiers du pr
 @aidw-collector/aidw-collector.md
 ```
 
-L'agent analyse le projet, sélectionne les extracteurs, les lance en séquence, puis produit les fichiers dans `aidw-collector/dest/`.
+L'agent analyse le projet, résout les gaps par sources alternatives, produit les fichiers dans `aidw-collector/dest/`, puis s'auto-évalue.
 
 ### 4. Déployer dans generationPDF
 
 Suivre les instructions dans `aidw-collector/dest/INSTALL.md` (généré automatiquement).
 
 ```bash
-# Exemple pour cerascan :
-cp aidw-collector/dest/CLIENT.md        generationPDF/cerascan/.docs/
-cp aidw-collector/dest/glossaire.md     generationPDF/cerascan/.docs/
-cp aidw-collector/dest/architecture.md  generationPDF/cerascan/.docs/
-cp aidw-collector/dest/screens.md       generationPDF/cerascan/.docs/
-cp aidw-collector/dest/userflows.md     generationPDF/cerascan/.docs/
-cp aidw-collector/dest/access-matrix.md generationPDF/cerascan/.docs/
-cp aidw-collector/dest/deployment.md    generationPDF/cerascan/.docs/
+# Exemple pour cerascan (les noms de fichiers varient selon le split) :
+cp aidw-collector/dest/CLIENT.md              generationPDF/cerascan/.docs/
+cp aidw-collector/dest/glossaire.md           generationPDF/cerascan/.docs/
+cp aidw-collector/dest/architecture.md        generationPDF/cerascan/.docs/
+cp aidw-collector/dest/screens-public.md      generationPDF/cerascan/.docs/
+cp aidw-collector/dest/screens-admin.md       generationPDF/cerascan/.docs/
+cp aidw-collector/dest/userflows-client.md    generationPDF/cerascan/.docs/
+cp aidw-collector/dest/userflows-admin.md     generationPDF/cerascan/.docs/
+cp aidw-collector/dest/access-matrix.md       generationPDF/cerascan/.docs/
+cp aidw-collector/dest/deployment.md          generationPDF/cerascan/.docs/
 ```
 
 Puis décommenter les entrées correspondantes dans `bank.yml → docs:`.
