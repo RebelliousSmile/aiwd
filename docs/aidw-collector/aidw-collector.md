@@ -1,7 +1,7 @@
 ---
 name: aidw-collector
 description: Analyse un projet (code + docs) et produit tous les fichiers .docs/ nécessaires à la documentation AIDW. Détecte automatiquement le nom du projet, son objet, son audience et sa stack. Exécute les extracteurs spécialisés séquentiellement, résout les gaps par sources alternatives, et s'auto-évalue pour améliorer collect.yml.
-version: 3.3
+version: 3.4
 type: agent
 output: aidw-collector/dest/
 ---
@@ -67,9 +67,25 @@ Si `collect.yml` est absent → tout est auto-détecté, continuer normalement.
 
 Si `collect.yml` est présent : les champs renseignés **remplacent** les valeurs auto-détectées. Lister explicitement quels champs ont été surchargés.
 
-### 0d. Résumé de l'inventaire (à afficher avant de continuer)
+### 0d. Source Map — Inventaire des sources disponibles
 
-Ce résumé combine détection auto (0b) et hints (0c). Il est la référence pour tous les extracteurs.
+Avant de produire le résumé, lister explicitement les fichiers et dossiers pertinents trouvés dans le projet. Cette Source Map est **transmise à chaque extracteur** pour qu'il sache exactement où chercher.
+
+Chercher activement dans cet ordre :
+
+**Tests et comportements :**
+- `tests/e2e/`, `cypress/`, `playwright/`, `e2e/`, `test/e2e/`, `spec/e2e/` → fichiers `*.spec.*`, `*.test.*`, `*.cy.*`
+- `features/`, `specs/`, `*.feature` → fichiers Gherkin/BDD
+- `tests/integration/`, `test/`, `spec/` → tests nommés métier
+
+**Documentation fonctionnelle :**
+- `documentation/`, `docs/`, `memory-bank/`, `doc/` → sous-dossiers `functional/`, `business/`, `specs/`
+- Fichiers : `personas.md`, `business-processes.md`, `user-stories*.md`, `requirements*.md`, `SPECS*.md`
+- `README.md` → sections Usage, Getting Started, How to use, Features
+
+**Configuration et structure :**
+- `.env.example`, `.env.sample`, `docker-compose*.yml`, `Dockerfile`
+- `package.json`, `pyproject.toml`, `go.mod` → scripts, dépendances
 
 ```
 === Inventaire aidw-collector ===
@@ -83,7 +99,18 @@ Déploiement     : oui / non  ([pattern trouvé] ou [aucun pattern])
 Specs fonct.    : oui / non  ([pattern trouvé] ou [aucun pattern])
 Thèmes custom   : [liste depuis collect.yml] ou "aucun"
 Hints collect.yml: [champs surchargés] ou "aucun"
+
+--- Source Map ---
+Tests e2e       : [chemins trouvés, ex: tests/e2e/*.spec.js (12 fichiers)] ou "aucun"
+Tests Gherkin   : [chemins trouvés] ou "aucun"
+Docs fonct.     : [chemins trouvés, ex: documentation/memory-bank/functional/] ou "aucun"
+Personas        : [chemin fichier] ou "aucun"
+Business proc.  : [chemin fichier] ou "aucun"
+User stories    : [chemin fichier] ou "aucun"
+Env config      : [.env.example trouvé | absent]
 ```
+
+Cette Source Map est la référence que chaque extracteur doit consulter EN PREMIER pour identifier ses sources disponibles, avant de descendre dans l'ordre de priorité de son prompt.
 
 ---
 
@@ -134,9 +161,10 @@ Exécuter chaque extracteur retenu **dans l'ordre du tableau ci-dessus**.
 
 **Pour chaque extracteur :**
 1. Annoncer : `→ extract-[nom] en cours…`
-2. Lire et exécuter : `@aidw-collector/prompts/extract-[nom].prompt.md`
-3. Produire le fichier dans `dest/[fichier].md`
-4. Passer immédiatement au **Step 2b — Gap Resolution** sur ce fichier
+2. **Consulter la Source Map (Step 0d)** — identifier les chemins disponibles pertinents pour cet extracteur (tests e2e, docs fonct., personas, etc.) et les lire en priorité avant de descendre dans l'ordre de priorité du prompt
+3. Lire et exécuter : `@aidw-collector/prompts/extract-[nom].prompt.md`
+4. Produire le fichier dans `dest/[fichier].md`
+5. Passer immédiatement au **Step 2b — Gap Resolution** sur ce fichier
 
 ---
 
