@@ -1,0 +1,95 @@
+# bank.yml Template
+# Fichier de configuration des ressources pour un Document
+# Place ce fichier à la racine du Document (ex: <client>/<projet>/bank.yml)
+#
+# Documentation complète : docs/memory-bank/project-structure.md
+
+# ===================================================================
+# IDENTIFICATION
+# ===================================================================
+document:
+  name: "<nom-document>"
+  client: "<identifiant-client>"    # nom du client (ex: acme-corp, tech-solutions)
+  type: "<type-document>"           # technical-doc | user-guide | api-doc | process-doc
+
+# ===================================================================
+# RESSOURCES OBLIGATOIRES
+# ===================================================================
+
+# Style d'écriture (output-style)
+# Définit le ton, les conventions stylistiques
+# technical-formal | user-friendly | developer-docs | process-documentation
+output-style:
+  global: "<client>/.output-styles/<style>.md"
+  projet: ".claude/output-style.md"  # optionnel, surcharge local
+
+# ===================================================================
+# DOCUMENTATION CLIENT (fichiers thématiques)
+# ===================================================================
+# Commenter les lignes non pertinentes pour ce projet
+# Seuls les fichiers listés seront chargés par les prompts
+
+docs:
+  # --- Obligatoire ---
+  client: "<client>/.docs/CLIENT.md"              # Infos client, tone, audience
+  glossaire: "<client>/.docs/glossaire.md"        # Termes métier, vocabulaire technique
+
+  # --- Optionnels (décommenter selon besoin du projet) ---
+  # brand: "<client>/.docs/brand-guidelines.md"   # Charte graphique, guidelines marque
+  # architecture: "<client>/.docs/architecture.md" # Architecture système (si doc technique)
+  # api-specs: "<client>/.docs/api-specs.md"      # Spécifications API (si applicable)
+
+  # --- Spécifiques au projet (dans .docs/) ---
+  # Voir docs/memory-bank/project-structure.md pour la liste complète
+  projet:
+    # - ".docs/context.md"               # Contexte projet
+    # - ".docs/sources/"                 # Docs existantes, captures, PDFs
+    # - ".docs/document-rules.md"        # Règles spécifiques au document
+
+# Overview / Brief du projet
+# Description générale, intentions, pitch
+overview: "overview.md"
+
+# Table des matières / Structure du document
+# Sommaire détaillé avec synopsis des chapitres
+toc:
+  fichier: ".toc/INDEX.md"
+  # OU chemin relatif si partagé au niveau univers
+  # fichier: "../toc-templates/novel.md"
+
+# ===================================================================
+# RESSOURCES CONDITIONNELLES (selon type de document)
+# ===================================================================
+
+# Standards et normes (optionnel, pour docs conformité)
+# standards:
+#   - "docs/standards/iso-9001.md"
+#   - "docs/standards/rgpd.md"
+
+# ===================================================================
+# EXPORT ICML (INDESIGN)
+# ===================================================================
+# Configuration pour le pipeline ICML/InDesign (optionnel)
+# Utilise par: python scripts/build-icml.py --project "<univers>/<projet>"
+
+icml:
+  chapitres-source: "chapitres/"
+  chapitres-order:
+    - "chapitres/chapitre01.md"
+    - "chapitres/chapitre02.md"
+    # ...
+  output: "output/<nom-projet>.icml"   # ICML à la racine output/ (liens InDesign immuables)
+  # releases: "output/releases/"       # Dossier pour les exports PDF versionnés
+  # indesign: "output/indesign/"       # Sources maquette InDesign
+
+# ===================================================================
+# METADONNEES
+# ===================================================================
+metadata:
+  auteur: "<nom-auteur>"
+  date-creation: "YYYY-MM-DD"
+  version: "1.0"
+  statut: "draft | review | final"
+  tags:
+    - "<tag1>"
+    - "<tag2>"

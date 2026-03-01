@@ -1,0 +1,118 @@
+# Styles ICML pour InDesign — Projet PDFLateX
+# Définit les styles de paragraphe à injecter dans le RootParagraphStyleGroup
+# de chaque fichier ICML généré par Pandoc (absents par défaut).
+#
+# Convention Lua filter :
+#   - Tous les encadrés (:::regle, :::mecanisme, :::oracle, etc.) → EncartTitre / EncartCorps
+#   - ReadAloud : blockquote (> texte)
+#   - Separator : ligne horizontale (---) → "* * *"
+#
+# Styles déjà émis par Pandoc (ne pas réinjecter) :
+#   Header1..Header5, Paragraph, BulList, NumList, BlockQuote,
+#   TablePar, TablePar > TableHeader, $ID/NormalParagraphStyle
+#
+# Police par défaut : injectée depuis bank.yml ou "Georgia" si absent.
+
+# ---------------------------------------------------------------------------
+# Couleurs personnalisées (CMYK, valeurs 0-100)
+# Injectées dans un <RootColorGroup> avant la <Story> dans chaque ICML.
+# Référencées dans shading_color / rule_above_color / rule_below_color.
+# ---------------------------------------------------------------------------
+colors:
+  EncartClair:
+    cmyk: "0 9 31 9"      # #E8D4A0 — fond sable (encadrés clairs Écryme)
+  EncartSombre:
+    cmyk: "0 24 51 80"    # #332719 — fond brun foncé (encadrés sombres Écryme)
+  DoreBordure:
+    cmyk: "0 20 76 22"    # #C8A030 — or (filets ornementaux Écryme)
+
+# ---------------------------------------------------------------------------
+# Styles à injecter (absents de l'ICML Pandoc par défaut)
+# EncartTitre et EncartCorps couvrent TOUS les types d'encadrés
+# ---------------------------------------------------------------------------
+box_styles: {}
+
+# ---------------------------------------------------------------------------
+# Styles de caractère (CharacterStyle)
+# SpecialSymbol : police de substitution pour caractères Unicode absents de Georgia
+#   → ← ↑ ↓ ● ○ ◆ ◇ ☉ ≤ ≥ ± − (wrappés automatiquement par build-icml.py)
+# ---------------------------------------------------------------------------
+char_styles:
+  SpecialSymbol:
+    font: "Garamond Premier Pro"
+
+# ---------------------------------------------------------------------------
+# Styles de paragraphe supplémentaires
+# ---------------------------------------------------------------------------
+extra_styles:
+
+  # --- Encadré clair (:::regle, :::pnj, :::oracle…) ---
+  # Fond sable #E8D4A0, filet or en tête.
+  # Note : la bordure basse doit être appliquée manuellement dans InDesign
+  # via un GREP Style sur le dernier EncartCorps de chaque encadré.
+  EncartTitre:
+    point_size: 9
+    leading: 12
+    space_before: 8       # espace au-dessus de l'encadré
+    space_after: 1
+    font_style: "Bold"
+    shading_on: true
+    shading_color: "EncartClair"
+    shading_top_offset: 4     # fond remonte dans le space_before
+    shading_bottom_offset: 0  # flush bas → se connecte à EncartCorps
+    shading_left_offset: 0
+    shading_right_offset: 0
+    rule_above_on: true
+    rule_above_weight: 0.75
+    rule_above_color: "DoreBordure"
+    rule_above_width: "ColumnWidth"
+    rule_above_offset: 4      # filet positionné dans le space_before
+
+  EncartCorps:
+    point_size: 9
+    leading: 12
+    space_before: 0       # flush haut → se connecte à EncartTitre ou au para précédent
+    space_after: 8        # espace sous le dernier EncartCorps
+    shading_on: true
+    shading_color: "EncartClair"
+    shading_top_offset: 0
+    shading_bottom_offset: 4  # fond descend dans le space_after (dernier para)
+    shading_left_offset: 0
+    shading_right_offset: 0
+
+  # --- Conseil / citation (> blockquote) ---
+  ReadAloud:
+    point_size: 9
+    leading: 12
+    space_before: 4
+    space_after: 4
+    font_style: "Italic"
+    left_indent: 8
+    right_indent: 8
+
+  # --- Séparateur ornemental (---) ---
+  Separator:
+    point_size: 6
+    leading: 8
+    space_before: 6
+    space_after: 6
+
+  # --- Niveaux de titres H3–H5 ---
+  # Injectés ici pour garantir leur présence dans l'ICML même si le markdown
+  # ne les utilise pas (évite le problème d'import InDesign sur Update Link).
+  # Header1 et Header2 sont déjà émis par Pandoc.
+  Header3:
+    point_size: 20
+    space_before: 8
+    space_after: 2
+
+  Header4:
+    point_size: 16
+    space_before: 6
+    space_after: 2
+
+  Header5:
+    point_size: 13
+    space_before: 4
+    space_after: 1
+    font_style: "Bold"

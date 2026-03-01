@@ -1,0 +1,240 @@
+---
+name: Review Pipeline
+description: Orchestrates personas feedback, technical corrections, and output-style improvements
+argument-hint: <chapter-range> [--personas list] [--threshold N] [--improve-style] [--parallel]
+---
+
+# Review Pipeline Agent
+
+Agent de relecture industriel garantissant qualité ≥ seuil (défaut 7/10) avant publication.
+
+**Pipeline :** Feedback personas → Corrections techniques → Amélioration continue output-styles
+
+| Action | Prompt | Output |
+|--------|--------|--------|
+| Feedback | comment.prompt.md | .docs/comments/*-personas.md |
+| Correction | doctor.prompt.md (si score < seuil) | .docs/doctor-report-*.md |
+| Amélioration | tone-finder (suggéré si patterns) | output-style v+1 |
+
+## Workflow
+
+```
+chapitres/chapitre<NN>.md
+         │
+         ▼
+    comment.prompt.md (personas) → .docs/comments/chapitre<NN>-personas.md
+         │
+         ├─ Score < seuil ? → doctor.prompt.md → corrections
+         │
+         └─ Patterns ≥3 chapitres ? → SUGGEST tone-finder --improve-from-feedback
+                                       (validation humaine requise)
+```
+
+## Input
+
+**Format :** `<chapter-range> [options]`
+
+```bash
+# Exemples
+2              # Chapitre 02
+2-5            # Chapitres 02 à 05
+all            # Tous les chapitres
+2,4,6          # Chapitres spécifiques
+```
+
+**Options :**
+- `--personas <list>` : Personas séparés par virgule (défaut: auto-détection)
+- `--threshold <N>` : Seuil correction (défaut: 7.0)
+- `--target <N>` : Score cible pour itération (défaut: désactivé, max 3 itérations)
+- `--improve-style` : Suggérer amélioration output-style si patterns détectés
+- `--skip-doctor` : Feedback uniquement, pas de corrections
+- `--parallel` : Batch par 3 chapitres (comment.prompt.md uniquement)
+- `--dry-run` : Afficher plan sans exécuter
+
+## Context
+
+**Charger AU DÉBUT de Step 1 :**
+```
+@bank.yml                                   # Config + type document
+@<univers>/.templates/personas/*.yml        # Personas (auto-detect selon Rules #1)
+@<projet>/.templates/personas/*.yml
+@docs/templates/personas/*.yml
+@docs/typographie.md                        # Règles français
+
+# Chaînage: Exécuter @docs/agents/writing-pipeline.md avant si chapitres manquants
+```
+
+## Rules
+
+1. **AUTO-DETECT PERSONAS** : Projet (poids 1.0) > Univers (0.8) > Global (0.5)
+2. **VALIDATION HUMAINE OBLIGATOIRE** : tone-finder ne s'exécute JAMAIS automatiquement
+3. **BACKUP AVANT MODIFICATION** : `<file>.bak.<timestamp>` avant doctor
+4. **PARALLÈLE = COMMENT UNIQUEMENT** : doctor et tone-finder toujours séquentiels
+5. **PATTERNS ≥3 CHAPITRES** : Même correction dans 3+ chapitres OU deal-breaker ≥1 persona
+6. **RE-VALIDATION POST-DOCTOR** : Re-run comment si corrections appliquées
+7. **STOP SI ÉCHEC** : Score < seuil après doctor → demander action humaine
+8. **ITÉRATION LIMITÉE** : Si `--target`, max 3 itérations par chapitre, STOP si plateau (Δ<0.3)
+
+## Process
+
+### Step 1: Planning
+
+**1.1 Parse & Validate**
+- Chapitres : Convertir range → liste numéros
+- Personas : `--personas` OU auto-détection (voir Rules #1)
+- Seuil : `--threshold` OU 7.0
+- Target : `--target` (si spécifié, active mode itératif avec max 3 cycles)
+- Valider existence `chapitres/chapitre<NN>.md` → **STOP si absents** avec liste manquants
+
+**1.2 Confirm Plan**
+```
+Chapitres: [02, 03, 04]
+Personas: [fan-wot (projet), professeure-francais (projet)]
+Seuil: 7.0/10
+
+[Continuer] [Modifier] [Annuler]
+```
+
+### Step 2: Review Execution
+
+**Pour chaque chapitre :**
+
+**LOOP** (si `--target` spécifié, max 3 itérations) :
+
+**2.1 Feedback Personas**
+```bash
+@docs/prompts/workshop/comment.prompt.md chapitres/chapitre<NN>.md
+```
+→ `.docs/comments/chapitre<NN>-personas.md`
+
+**2.2 Analyze Results**
+- Extraire : consensus_score, persona_scores[], improvements[]
+- Détecter patterns : Même correction ≥3 chapitres OU deal-breaker ≥1 persona
+- Logger : `Chapitre <NN> [it.X]: <score>/10, <n> améliorations`
+
+**2.3 Check Target** (si `--target` activé)
+- **IF tous personas ≥ target :** `✅ BREAK LOOP (objectif atteint)`
+- **IF itération > 1 ET Δ < 0.3 :** `⚠️ BREAK LOOP (plateau détecté)`
+- **IF itération = 3 :** `⚠️ BREAK LOOP (limite atteinte, score max: X/10)`
+
+**2.4 Conditional Actions**
+
+**IF score < threshold (ou < target si --target) :**
+```bash
+@docs/prompts/workshop/doctor.prompt.md chapitres/chapitre<NN>.md \
+  --mode deep --remarks "<issues_from_comment>"
+```
+→ `.docs/doctor-report-chapitre<NN>.md` + backup
+
+**THEN :** Comparer scores (Avant: X/10 → Après: Y/10, Δ+Z)
+- **IF toujours < seuil :** `⚠️ STOP → Actions: [Réécrire] [Analyser TOC] [Continuer]`
+- **ELSE IF --target :** CONTINUE LOOP (re-run comment)
+
+**IF patterns détectés ET --improve-style :**
+```
+⚠️ Pattern: <type> (<n> chapitres)
+→ SUGGEST: tone-finder --improve-from-feedback (validation humaine requise)
+```
+
+**IF pattern non automatisable :**
+```
+ℹ️ Pattern: "<description>" → Réécriture manuelle recommandée
+```
+
+**END LOOP**
+
+**2.5 Summary Report** (fin de batch)
+- Créer `.docs/review-summary-<date>.md` avec :
+  - Tableau scores (chapitre, consensus, actions, itérations)
+  - Patterns détectés + recommandations
+  - Prochaines étapes (checklist)
+
+**Note Performance :** ~3min/chapitre séquentiel, ~7min/5 chapitres parallèle (batch 3), +2min/itération si `--target`
+```bash
+@docs/prompts/workshop/comment.prompt.md chapitres/chapitre<NN>.md
+```
+→ `.docs/comments/chapitre<NN>-personas.md`
+
+**2.2 Analyze Results**
+- Extraire : consensus_score, persona_scores[], improvements[]
+- Détecter patterns : Même type correction ≥3 chapitres OU deal-breaker ≥1 persona
+- Logger : `Chapitre <NN>: <score>/10, <n> améliorations`
+
+**2.3 Conditional Actions**
+
+**IF score < threshold :**
+```bash
+@docs/prompts/workshop/doctor.prompt.md chapitres/chapitre<NN>.md \
+  --mode deep --remarks "<issues_from_comment>"
+```
+→ `.docs/doctor-report-chapitre<NN>.md` + backup
+
+**THEN Re-validation :**
+- Re-run comment.prompt.md
+- Comparer : `Avant: X/10 → Après: Y/10 (Δ+Z)`
+- **IF toujours < seuil :** `⚠️ STOP → Actions: [Réécrire] [Analyser TOC] [Continuer]`
+
+**IF patterns détectés ET --improve-style :**
+```
+⚠️ Pattern: <type> (<n> chapitres)
+→ SUGGEST: tone-finder --improve-from-feedback (validation humaine requise)
+```
+
+**IF pattern non automatisable :**
+```
+ℹ️ Pattern: "<description>" → Réécriture manuelle recommandée
+```
+
+**2.4 Summary Report** (fin de batch)
+- Créer `.docs/review-summary-<date>.md` avec :
+  - Tableau scores (chapitre, consensus, actions)
+  - Patterns détectés + recommandations
+  - Prochaines étapes (checklist)
+
+**Note Performance :** ~3min/chapitre séquentiel, ~7min/5 chapitres parallèle (batch 3)
+
+## Output
+
+**Fichiers générés :**
+```
+.docs/comments/chapitre<NN>-personas.md     # Feedback personas
+.docs/doctor-report-chapitre<NN>.md         # Corrections (si doctor)
+.docs/review-summary-<date>.md               # Rapport global
+chapitres/chapitre<NN>.md.bak.<timestamp>   # Backup (si modifié)
+```
+
+**Console :**
+```
+[1/2] Feedback... ✓ (consensus 8.5/10)
+[2/2] Summary... ✓
+✅ Chapitre 03 validé
+
+Note: Étapes varient selon options (--skip-doctor, --improve-style)
+```
+
+## Examples
+
+```bash
+# Review complet avec auto-détection personas
+review-pipeline.md all
+
+# Chapitres ciblés, personas spécifiques, seuil strict
+review-pipeline.md 2-5 --personas fan-wot,professeure-francais --threshold 8.5
+
+# Review rapide sans corrections, juste feedback
+review-pipeline.md all --skip-doctor
+
+# Activation amélioration output-style (suggère tone-finder)
+review-pipeline.md all --improve-style --parallel
+```
+
+**Chaînage avec writing-pipeline :**
+```bash
+writing-pipeline.md 2-5        # Génère chapitres
+review-pipeline.md 2-5         # Relecture complète
+```
+
+---
+
+**Version:** 2.0  
+**Changelog:** Suppression commentaires HTML, ajout Goal, fusion Step 4 dans Step 2, condensation (181 lignes)

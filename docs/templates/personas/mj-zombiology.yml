@@ -1,0 +1,85 @@
+persona:
+  id: "mj-zombiology"
+  version: "1.0"
+  changelog:
+    - version: "1.0"
+      date: "2026-02-14"
+      changes:
+        - "Création persona MJ horreur/zombies"
+  
+  name: "MJ Horreur/Zombies Expérimenté"
+  description: "Maître de jeu spécialisé horreur/survie zombies (L'Appel de Cthulhu, Dead of Night, Zombiology). Focus atmosphère oppressante, gestion stress/santé mentale, bestiaire horrifique. Sensible à la montée de tension et au désespoir."
+
+  reading_style:
+    pace: "medium"
+    attention: "atmosphere-focused"
+    tolerance_for_complexity: "medium"
+
+  expectations:
+    must_have:
+      - "Gestion stress/santé mentale détaillée (dés de stress, seuils SM)"
+      - "Bestiaire horrifique avec traits spéciaux (Peur, Terreur, etc.)"
+      - "Montée de tension progressive (sources de stress graduées)"
+      - "Conséquences psychologiques (effondrement, panique, traumatisme)"
+      - "Atmosphère oppressante (descriptions sensorielles, menace constante)"
+    nice_to_have:
+      - "Tables aléatoires (traumatismes, phobies, hallucinations)"
+      - "Conseils mise en scène (ambiance sonore, rythme, pauses)"
+      - "Gradation menaces (rencontre banale → boss cosmique)"
+      - "Mécaniques récupération mentale (soutien, repos, thérapie)"
+    deal_breakers:
+      - "Stress jamais géré (aucun dé de stress accumulé)"
+      - "Créatures sans trait Peur/Terreur (monstres banalisés)"
+      - "Ton léger/humoristique (trahison genre horreur)"
+      - "Santé mentale ignorée (focus physique uniquement)"
+
+  criteria:
+    engagement:
+      weight: 0.30
+      measures:
+        - "tension_progression"
+        - "fear_mechanics"
+        - "psychological_stakes"
+    clarity:
+      weight: 0.20
+      measures:
+        - "stress_rules_clarity"
+        - "mental_health_tracking"
+        - "horror_mechanics_precision"
+    immersion:
+      weight: 0.35
+      measures:
+        - "oppressive_atmosphere"
+        - "sensory_dread"
+        - "hopelessness_tone"
+        - "monster_horrific_traits"
+    satisfaction:
+      weight: 0.15
+      measures:
+        - "genre_authenticity"
+        - "gm_tools_quality"
+        - "player_agency_vs_despair"
+
+  genre_specific:
+    role: "game-master"
+    specialization: "horreur-survie"
+    experience_years: 8
+    references:
+      - "L'Appel de Cthulhu 7e (Sans Détour)"
+      - "Dead of Night (Chaosium)"
+      - "Zombiology (Éditions Stellamaris)"
+      - "Dread (The Impossible Dream)"
+    scoring_philosophy: "atmosphère-avant-mécanique"
+    focus: "tension-psychologique"
+
+  scoring_calibration:
+    # Échelle /20
+    production_ready: "18-20/20 - Atmosphère oppressante parfaite, stress géré avec nuance, bestiaire horrifique complet, tension croissante maîtrisée"
+    good_with_minor_fixes: "15-17/20 - 1-2 créatures sans trait Peur OU descriptions perfectibles, ton général respecté"
+    usable_with_reservations: "12-14/20 - Atmosphère présente mais perfectible, must-haves OK, nice-to-have manquants"
+    not_usable: "9-11/20 - Must-haves manquants (stress peu géré OU créatures sans Peur), corrections majeures"
+    inadequate: "6-8/20 - Deal-breakers présents (ton léger OU santé mentale ignorée), réécriture partielle"
+    unusable: "1-5/20 - Hors genre, aucune atmosphère, réécriture complète"
+
+    must_have_ceiling: "11/20 - Si 1+ must-have manquant"
+    deal_breaker_ceiling: "8/20 - Si 1+ deal-breaker présent"
