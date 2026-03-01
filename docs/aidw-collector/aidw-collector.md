@@ -57,7 +57,7 @@ Audience        : [README → section "Pour qui" | "Target" | "Audience" | menti
 - Fichiers : `*.feature`, `user-stories*.md`, `requirements*.md`, `SPECS*.md`, `backlog*.md`
 - Dossiers : `features/`, `specs/`, `user-stories/`, `stories/`
 - Sections README : "Features", "Fonctionnalités", "Use Cases", "Ce que fait le projet"
-- Docs fonctionnels : `docs/functional/`, `memory-bank/functional/`, `documentation/functional/`
+- Memory-bank (chercher dans tout le projet) : `*/memory-bank/functional/`, `*/memory/internal/`, `*/memory/external/`
 
 **Cas limite** : si le projet n'a ni README, ni package.json, ni fichier source identifiable → écrire `[À COMPLÉTER]` dans tous les champs et continuer.
 
@@ -79,8 +79,10 @@ Chercher activement dans cet ordre :
 - `tests/integration/`, `test/`, `spec/` → tests nommés métier
 
 **Documentation fonctionnelle :**
-- `documentation/`, `docs/`, `memory-bank/`, `doc/` → sous-dossiers `functional/`, `business/`, `specs/`
-- Fichiers : `personas.md`, `business-processes.md`, `user-stories*.md`, `requirements*.md`, `SPECS*.md`
+- Chercher `memory-bank` **dans tout le projet** (pas seulement à la racine) : `docs/memory-bank/`, `src/memory-bank/`, `<n'importe-quel-dossier>/memory-bank/`
+- Sur les projets AIDD récents, chercher aussi `memory/internal/` et `memory/external/` (remplacent `memory-bank/` dans les nouvelles versions)
+- Sous-dossiers fonctionnels prioritaires : `functional/`, `business/`, `specs/`, `userflows/`
+- Fichiers à rechercher dans tout le projet : `personas.md`, `business-processes.md`, `user-stories*.md`, `requirements*.md`, `SPECS*.md`
 - `README.md` → sections Usage, Getting Started, How to use, Features
 
 **Configuration et structure :**
@@ -103,7 +105,9 @@ Hints collect.yml: [champs surchargés] ou "aucun"
 --- Source Map ---
 Tests e2e       : [chemins trouvés, ex: tests/e2e/*.spec.js (12 fichiers)] ou "aucun"
 Tests Gherkin   : [chemins trouvés] ou "aucun"
-Docs fonct.     : [chemins trouvés, ex: documentation/memory-bank/functional/] ou "aucun"
+Memory-bank     : [chemin trouvé, ex: docs/memory-bank/functional/] ou "aucun"
+Memory/internal : [chemin trouvé si AIDD récent] ou "aucun"
+Memory/external : [chemin trouvé si AIDD récent] ou "aucun"
 Personas        : [chemin fichier] ou "aucun"
 Business proc.  : [chemin fichier] ou "aucun"
 User stories    : [chemin fichier] ou "aucun"
