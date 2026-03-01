@@ -38,26 +38,25 @@ Audience        : [README → section "Pour qui" | "Target" | "Audience" | menti
                   Si absent : [À COMPLÉTER]
 ```
 
-**UI détectée** → `oui` si au moins un de ces patterns est présent :
-- Dossiers : `components/`, `pages/`, `views/`, `templates/`, `screens/`, `app/` (Next/Nuxt/React)
+**UI détectée** → `oui` si au moins un de ces patterns est présent (chercher par nom, n'importe où dans le projet) :
+- Dossiers : `components`, `pages`, `views`, `templates`, `screens`, `app`
 - Fichiers : `*.vue`, `*.jsx`, `*.tsx`, `*.html` (hors layout email), `*.svelte`
-- Config : `vite.config.*`, `next.config.*`, `angular.json`, `nuxt.config.*`
+- Fichiers de config : `vite.config.*`, `next.config.*`, `angular.json`, `nuxt.config.*`
 
-**Auth/rôles détectés** → `oui` si au moins un de ces patterns est présent :
-- Dossiers : `guards/`, `middleware/auth*`, `policies/`, `permissions/`, `acl/`
+**Auth/rôles détectés** → `oui` si au moins un de ces patterns est présent (chercher par nom, n'importe où dans le projet) :
+- Dossiers : `guards`, `middleware`, `policies`, `permissions`, `acl`
 - Fichiers contenant : `@roles(`, `hasRole`, `isAdmin`, `canActivate`, `permission_required`
-- Config : `passport.*`, `jwt.*`, `oauth.*`, `keycloak.*`
+- Fichiers de config : `passport.*`, `jwt.*`, `oauth.*`, `keycloak.*`
 
-**Déploiement détecté** → `oui` si au moins un de ces patterns est présent :
-- Fichiers : `Dockerfile`, `docker-compose*.yml`, `.env.example`, `.env.sample`
-- Dossiers : `.github/workflows/`, `.gitlab-ci.yml`, `terraform/`, `kubernetes/`, `helm/`
-- Scripts : `deploy.sh`, `Makefile` (target deploy), `scripts/deploy*`
+**Déploiement détecté** → `oui` si au moins un de ces patterns est présent (chercher par nom, n'importe où dans le projet) :
+- Fichiers : `Dockerfile`, `docker-compose*.yml`, `.env.example`, `.env.sample`, `deploy.sh`
+- Dossiers : `workflows`, `terraform`, `kubernetes`, `helm`
+- Fichiers de config CI : `.gitlab-ci.yml`, `Makefile`
 
-**Specs fonctionnelles détectées** → `oui` si au moins un de ces patterns est présent :
+**Specs fonctionnelles détectées** → `oui` si au moins un de ces patterns est présent (chercher par nom, n'importe où dans le projet) :
 - Fichiers : `*.feature`, `user-stories*.md`, `requirements*.md`, `SPECS*.md`, `backlog*.md`
-- Dossiers : `features/`, `specs/`, `user-stories/`, `stories/`
+- Dossiers : `features`, `specs`, `user-stories`, `stories`, `memory-bank`, `functional`
 - Sections README : "Features", "Fonctionnalités", "Use Cases", "Ce que fait le projet"
-- Memory-bank (chercher dans tout le projet) : `*/memory-bank/functional/`, `*/memory/internal/`, `*/memory/external/`
 
 **Cas limite** : si le projet n'a ni README, ni package.json, ni fichier source identifiable → écrire `[À COMPLÉTER]` dans tous les champs et continuer.
 
@@ -71,23 +70,20 @@ Si `collect.yml` est présent : les champs renseignés **remplacent** les valeur
 
 Avant de produire le résumé, lister explicitement les fichiers et dossiers pertinents trouvés dans le projet. Cette Source Map est **transmise à chaque extracteur** pour qu'il sache exactement où chercher.
 
-Chercher activement dans cet ordre :
+**Principe : chercher par nom, pas par chemin.** Les dossiers peuvent être placés n'importe où dans l'arborescence. Utiliser une recherche récursive sur le nom du dossier ou du fichier, sans supposer son emplacement.
 
-**Tests et comportements :**
-- `tests/e2e/`, `cypress/`, `playwright/`, `e2e/`, `test/e2e/`, `spec/e2e/` → fichiers `*.spec.*`, `*.test.*`, `*.cy.*`
-- `features/`, `specs/`, `*.feature` → fichiers Gherkin/BDD
-- `tests/integration/`, `test/`, `spec/` → tests nommés métier
+**Tests et comportements — chercher tout dossier ou fichier nommé :**
+- Dossiers : `e2e`, `cypress`, `playwright`, `features`, `specs` (n'importe où dans le projet)
+- Fichiers : `*.spec.*`, `*.test.*`, `*.cy.*`, `*.feature` (n'importe où)
 
-**Documentation fonctionnelle :**
-- Chercher `memory-bank` **dans tout le projet** (pas seulement à la racine) : `docs/memory-bank/`, `src/memory-bank/`, `<n'importe-quel-dossier>/memory-bank/`
-- Sur les projets AIDD récents, chercher aussi `memory/internal/` et `memory/external/` (remplacent `memory-bank/` dans les nouvelles versions)
-- Sous-dossiers fonctionnels prioritaires : `functional/`, `business/`, `specs/`, `userflows/`
-- Fichiers à rechercher dans tout le projet : `personas.md`, `business-processes.md`, `user-stories*.md`, `requirements*.md`, `SPECS*.md`
-- `README.md` → sections Usage, Getting Started, How to use, Features
+**Documentation fonctionnelle — chercher tout dossier ou fichier nommé :**
+- Dossiers : `memory-bank`, `memory` (avec sous-dossiers `internal` et `external`), `functional`, `business-processes` (n'importe où)
+- Fichiers : `personas.md`, `business-processes.md`, `user-stories*.md`, `requirements*.md`, `SPECS*.md` (n'importe où)
+- `README.md` à la racine → sections Usage, Getting Started, How to use, Features
 
-**Configuration et structure :**
-- `.env.example`, `.env.sample`, `docker-compose*.yml`, `Dockerfile`
-- `package.json`, `pyproject.toml`, `go.mod` → scripts, dépendances
+**Configuration — chercher tout fichier nommé :**
+- `.env.example`, `.env.sample`, `docker-compose*.yml`, `Dockerfile` (n'importe où)
+- `package.json`, `pyproject.toml`, `go.mod` à la racine
 
 ```
 === Inventaire aidw-collector ===
@@ -103,15 +99,15 @@ Thèmes custom   : [liste depuis collect.yml] ou "aucun"
 Hints collect.yml: [champs surchargés] ou "aucun"
 
 --- Source Map ---
-Tests e2e       : [chemins trouvés, ex: tests/e2e/*.spec.js (12 fichiers)] ou "aucun"
-Tests Gherkin   : [chemins trouvés] ou "aucun"
-Memory-bank     : [chemin trouvé, ex: docs/memory-bank/functional/] ou "aucun"
-Memory/internal : [chemin trouvé si AIDD récent] ou "aucun"
-Memory/external : [chemin trouvé si AIDD récent] ou "aucun"
-Personas        : [chemin fichier] ou "aucun"
-Business proc.  : [chemin fichier] ou "aucun"
-User stories    : [chemin fichier] ou "aucun"
-Env config      : [.env.example trouvé | absent]
+Tests e2e       : [chemin réel trouvé, ex: src/tests/e2e/ (12 fichiers)] ou "aucun"
+Tests Gherkin   : [chemin réel trouvé] ou "aucun"
+Memory-bank     : [chemin réel trouvé, ex: docs/memory-bank/] ou "aucun"
+Memory/internal : [chemin réel trouvé] ou "aucun"
+Memory/external : [chemin réel trouvé] ou "aucun"
+Personas        : [chemin réel du fichier] ou "aucun"
+Business proc.  : [chemin réel du fichier] ou "aucun"
+User stories    : [chemin réel du fichier] ou "aucun"
+Env config      : [chemin réel trouvé] ou "absent"
 ```
 
 Cette Source Map est la référence que chaque extracteur doit consulter EN PREMIER pour identifier ses sources disponibles, avant de descendre dans l'ordre de priorité de son prompt.
