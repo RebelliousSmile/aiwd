@@ -1,79 +1,129 @@
 ---
 name: extract-architecture
 description: Extrait la stack technique et l'architecture d'un projet et produit architecture.md.
-version: 1.0
+version: 1.1
 ---
 
 # Extract Architecture
 
-À partir de l'inventaire partagé par `aidw-collector` et des fichiers du projet, produis `aidw-collector/dest/architecture.md`.
+À partir du contexte d'inventaire partagé par `aidw-collector` (Step 0) et des fichiers du projet, produis `aidw-collector/dest/architecture.md`.
+
+Utiliser la stack détectée en Step 0 comme point de départ — approfondir depuis les fichiers de configuration et le code source.
 
 ## Sources à lire
 
-1. `package.json`, `requirements.txt`, `pyproject.toml`, `Gemfile`, `go.mod`, `Cargo.toml`
-2. Structure des dossiers (inférer le pattern architectural)
-3. Fichiers de configuration principaux (`app.py`, `main.ts`, `index.js`, `server.*`…)
-4. Fichiers de modèles/entités (`models/`, `schemas/`, `types/`, `entities/`)
-5. Fichiers de routes / controllers
-6. Fichiers de services / logique métier
-7. Docs d'architecture existantes
+Dans cet ordre, en notant versions exactes si disponibles :
 
-## Ce qu'il faut extraire
-
-- **Stack** : langages + versions, framework principal, BDD, frontend, outils de build
-- **Pattern** : MVC, Clean Arch, microservices, monolithe… justifié depuis la structure
-- **Modules** : liste des modules/domaines avec leur responsabilité et leur dossier
-- **Flux de données** : comment les données circulent (entrée → traitement → sortie)
-- **Modèles de données clés** : entités principales, champs importants, relations
-- **Endpoints API** : méthode + route + description (si API exposée)
-- **Dépendances clés** : 10 bibliothèques les plus importantes avec leur rôle
+1. **Manifestes de dépendances** : `package.json`, `requirements.txt`, `pyproject.toml`, `Gemfile`, `go.mod`, `Cargo.toml`
+2. **Structure des dossiers** — inférer le pattern architectural (MVC, Clean Arch, microservices…)
+3. **Fichiers d'entrée** : `app.py`, `main.ts`, `index.js`, `server.*`
+4. **Modèles / entités** : `models/`, `schemas/`, `types/`, `entities/`
+5. **Routes / controllers**
+6. **Services / logique métier**
+7. **Configurations d'intégration** : `.env.example`, fichiers clients API, adapters
+8. **Docs d'architecture existantes**
 
 ## Output : `aidw-collector/dest/architecture.md`
+
+Les annotations `{ }` indiquent comment remplir chaque section — ne pas les inclure dans la sortie.
 
 ```markdown
 # Architecture — [Nom Projet]
 
 ## Stack Technique
 
+{versions exactes depuis les manifestes — sinon À COMPLÉTER}
+
 | Couche | Technologie | Version |
 |--------|-------------|---------|
-| [couche] | [techno] | [version ou "latest"] |
+| Frontend | [techno — sinon À COMPLÉTER] | [version] |
+| Backend | [techno — sinon À COMPLÉTER] | [version] |
+| Base de données | [techno — sinon À COMPLÉTER] | [version] |
+| Build / Tooling | [techno — sinon À COMPLÉTER] | [version] |
 
 ## Pattern Architectural
 
-[description du pattern — justifié depuis la structure du code]
+{justifier depuis la structure des dossiers — jamais d'hypothèse ; si non déterminable → À COMPLÉTER}
+
+**Pattern :** [MVC | Clean Architecture | Microservices | Monolithe | JAMstack | À COMPLÉTER]
+
+[2-3 phrases justifiant ce choix depuis la structure observée]
 
 ## Modules Principaux
 
 | Module | Responsabilité | Dossier |
 |--------|---------------|---------|
-| [module] | [rôle] | [chemin] |
+| [module] | [rôle — sinon À COMPLÉTER] | [chemin] |
 
-## Flux de Données
+## Flux de Données Principal
 
-[description du flux principal : requête/entrée → traitement → sortie/réponse]
+{schéma ASCII obligatoire + étapes numérotées — représenter le flux le plus fréquent}
+
+```
+[Entrée] → [Couche 1] → [Couche 2] → [Sortie]
+                            ↓
+                     [Service externe]
+```
+
+**Étapes :**
+1. [étape 1]
+2. [étape 2]
 
 ## Modèles de Données Clés
 
-| Entité | Champs importants | Relations | Notes |
-|--------|-------------------|-----------|-------|
-| [entité] | [champs] | [relations] | [comportement notable] |
+{champs importants = identifiant, champs métier clés, clés étrangères — pas tous les champs}
+
+| Entité | Champs clés | Relations | Notes |
+|--------|-------------|-----------|-------|
+| [entité] | [id, champs métier, FK] | [→ autre entité] | [comportement notable — sinon À COMPLÉTER] |
 
 ## Endpoints API Principaux
 
+{si pas d'API exposée → omettre cette section}
+{prioriser : top 10 endpoints par domaine fonctionnel — pas toutes les routes}
+
 | Méthode | Route | Description | Auth |
 |---------|-------|-------------|------|
-| [GET/POST…] | [/route] | [usage] | [oui/non] |
+| [GET/POST…] | [/route] | [usage — sinon À COMPLÉTER] | oui/non |
+
+## Intégrations Externes
+
+{APIs tierces, queues, stockages, services cloud — depuis .env.example, adapters, clients}
+
+| Service | Type | Usage | Obligatoire |
+|---------|------|-------|-------------|
+| [service] | [REST API / Queue / Storage / OAuth…] | [rôle — sinon À COMPLÉTER] | oui/non |
+
+Si aucune intégration externe détectée → écrire `Aucune intégration externe identifiée`.
 
 ## Dépendances Clés
 
-| Bibliothèque | Rôle | Obligatoire |
-|--------------|------|-------------|
-| [lib] | [usage] | oui/non |
+{grouper par couche, pas de limite fixe — inclure toute dépendance ayant un rôle architectural}
+
+### Frontend
+| Bibliothèque | Rôle |
+|--------------|------|
+| [lib] | [usage] |
+
+### Backend
+| Bibliothèque | Rôle |
+|--------------|------|
+| [lib] | [usage] |
+
+### Infrastructure / Outils
+| Bibliothèque | Rôle |
+|--------------|------|
+| [lib] | [usage] |
+
+---
+**Sources :** [liste des fichiers lus]
+**Màj :** YYYY-MM-DD
 ```
 
 ## Règles
 
-- Versions exactes si trouvées dans les fichiers de config, sinon `[À COMPLÉTER]`
-- Si pas d'API exposée → omettre la section Endpoints
-- Pattern architectural : jamais d'hypothèse — si non déterminable, écrire `[À COMPLÉTER]`
+1. **Versions exactes** depuis les manifestes — sinon `[À COMPLÉTER]`
+2. **Pattern = observation, pas hypothèse** — si non déterminable depuis la structure → `[À COMPLÉTER]`
+3. **Flux de données = schéma ASCII obligatoire** — si impossible à représenter → décrire en étapes numérotées
+4. **Endpoints = top 10 par domaine** — si le projet a plus de 10 routes, sélectionner les plus représentatives et noter `[N routes au total — voir code source]`
+5. **Ne jamais inventer** — information absente → `[À COMPLÉTER]`
