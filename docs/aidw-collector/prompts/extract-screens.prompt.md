@@ -40,3 +40,4 @@ Chaque fichier inclut une **Vue d'Ensemble** (tableau récapitulatif de ses écr
 3. **Accès** : si `dest/access-matrix.md` est disponible, reprendre les rôles depuis ce fichier plutôt que de réinférer
 4. **Pas de composants atomiques** : ne pas documenter les boutons, modals, inputs génériques — uniquement les écrans/pages complets
 5. **Ne jamais inventer** — information absente → `[À COMPLÉTER]`
+6. **Pas de références techniques internes** : ne pas inclure les noms de controllers, fichiers de vues, middlewares ou chemins internes (`src/controllers/...`, `src/views/...`) dans les fiches écran. Ces détails d'implémentation n'appartiennent pas à la documentation utilisateur. Utiliser uniquement ce que l'utilisateur voit : libellés, routes publiques, messages affichés.

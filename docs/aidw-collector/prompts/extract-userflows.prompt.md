@@ -69,7 +69,13 @@ Chaque fichier inclut le **tableau des rôles** en en-tête + les blocs FLUX cor
 
 1. **Tâche, pas écran** — chaque flux décrit ce que l'utilisateur VEUT ACCOMPLIR, pas comment l'écran est organisé
 2. **Nommer depuis l'usage** — "Envoyer une facture", pas "Cliquer sur le bouton Envoyer de la page Invoice"
-3. **Étapes = verbes utilisateur** — "Saisir", "Sélectionner", "Cliquer sur", "Valider", jamais "Le système appelle l'API"
-4. **Erreurs depuis les sources** — uniquement les messages trouvés dans i18n, tests ou templates — sinon `[À COMPLÉTER]`
-5. **Flux minimum** — si aucune source de flux n'est trouvée (pas de tests e2e, pas de feature files, pas de README usage), produire un flux squelette par module détecté en Step 0 et marquer tous les champs `[À COMPLÉTER]`
-6. **Ne jamais inventer** — information absente → `[À COMPLÉTER]`
+3. **Étapes = verbes utilisateur** — "Saisir", "Sélectionner", "Cliquer sur", "Valider", jamais "Le système appelle l'API". Chaque étape décrit ce que l'**utilisateur fait ou voit**, jamais ce que le code exécute.
+4. **Traduction fallback obligatoire** — si les sources sont des routes/controllers/vues (fallback Step 7), traduire systématiquement en langage utilisateur. Exemples :
+   - ❌ "`catalogueController` charge tous les produits → Rendu `catalogue.ejs`"
+   - ✅ "La liste des produits du partenaire s'affiche"
+   - ❌ "multer → stockage temporaire → `csvController` → `partnerCsvService`"
+   - ✅ "Le fichier CSV est transmis et traité par le système"
+   Noms de controllers, middlewares, fichiers de vues, services internes : **jamais dans les étapes**.
+5. **Erreurs depuis les sources** — uniquement les messages trouvés dans i18n, tests ou templates — sinon `[À COMPLÉTER]`
+6. **Flux minimum** — si aucune source de flux n'est trouvée (pas de tests e2e, pas de feature files, pas de README usage), produire un flux squelette par module détecté en Step 0 et marquer tous les champs `[À COMPLÉTER]`
+7. **Ne jamais inventer** — information absente → `[À COMPLÉTER]`
