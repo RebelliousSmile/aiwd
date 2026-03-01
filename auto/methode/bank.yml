@@ -1,11 +1,11 @@
 ---
 document:
-  name: "Méthode generationPDF"
+  name: "AIDW — AI Documentation Writing"
   client: "auto"
   type: "process-doc"
 
 output-style:
-  global: "auto/.output-styles/process-documentation.md"
+  global: "auto/.output-styles/open-source-guide.md"
 
 docs:
   client: "auto/.docs/CLIENT.md"
@@ -16,8 +16,8 @@ toc:
 
 personas:
   global:
-    - "docs/templates/personas/clarity-expert.yml"
-    - "docs/templates/personas/compliance-checker.yml"
+    - "docs/templates/personas/github-discoverer.yml"
+    - "docs/templates/personas/pro-adopter.yml"
   client: []
   projet: []
 
@@ -26,4 +26,4 @@ overview: "overview.md"
 icml:
   chapitres-source: "chapitres/"
   chapitres-order: []
-  output: "output/methode-generationpdf.icml"
+  output: "output/aidw.icml"

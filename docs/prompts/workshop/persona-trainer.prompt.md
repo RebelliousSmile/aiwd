@@ -2,6 +2,16 @@
 name: persona-trainer
 description: Improves persona effectiveness based on missed issues and feedback patterns
 argument-hint: <persona-id> [--feedback-files] [--issues-missed]
+version: 1.1
+changelog:
+  - version: 1.1
+    date: 2026-03-01
+    changes:
+      - "Step 0 ajouté : validation structurelle bloquante — vérifie que l'entité est un persona lecteur, pas un outil de vérification"
+  - version: 1.0
+    date: 2026-02-28
+    changes:
+      - "Version initiale"
 ---
 
 # Persona Trainer
@@ -50,6 +60,26 @@ Améliore les personas pour qu'ils détectent mieux les vrais problèmes qualit�
 6. **TESTER SUR ÉCHANTILLON** : Valider amélioration sur chapitre problématique
 
 ## Process
+
+### Step 0: Validation Structurelle (BLOQUANT)
+
+Avant toute amélioration, vérifier que l'entité soumise **est bien un persona** (lecteur humain) et non un outil de vérification.
+
+**Un persona représente :** un être humain qui lit le document avec ses attentes, son niveau de connaissance, sa patience, ses biais.
+
+**Ce n'est PAS un persona si :**
+- Le rôle décrit une action de vérification automatique (ex: "vérifie la cohérence", "audite les fichiers", "détecte les erreurs")
+- Le `description` parle d'un outil ou d'un processus plutôt que d'un profil humain
+- Les `expectations.must_have` sont des critères techniques (ex: "fichier existe", "commande valide") plutôt que des attentes de lecteur
+
+**Si ce n'est pas un persona → STOP :**
+```
+[ERREUR] "<persona-id>" n'est pas un persona lecteur — c'est un outil de vérification.
+Action requise : le convertir en prompt (docs/prompts/workshop/) ou en agent (docs/agents/).
+persona-trainer ne peut pas améliorer des outils de vérification.
+```
+
+**Si c'est bien un persona → continuer avec Step 1.**
 
 ### Step 1: Analyze Current Persona
 

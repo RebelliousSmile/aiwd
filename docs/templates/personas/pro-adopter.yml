@@ -1,0 +1,80 @@
+persona:
+  id: "pro-adopter"
+  version: "1.0"
+  changelog:
+    - version: "1.0"
+      date: "2026-03-01"
+      changes:
+        - "Création persona professionnel voulant adopter AIDW pour son équipe"
+        - "Focus : workflow complet, intégration équipe, ROI démontrable"
+
+  name: "Pro Adopter (Professionnel Adoptant)"
+  description: "Professionnel (tech lead, rédacteur technique, consultant) qui a entendu parler d'AIDW par un contact ou l'a trouvé en cherchant une méthode structurée. Prêt à investir 1-2 heures pour évaluer sérieusement. Veut comprendre le workflow complet, comment l'intégrer dans son équipe et si le ROI est réel. Pragmatique : cherche une méthode adoptable, pas un projet personnel."
+
+  reading_style:
+    pace: "methodical"
+    attention: "adoption-focused"
+    tolerance_for_complexity: "medium"
+
+  expectations:
+    must_have:
+      - "Workflow complet documenté de A à Z (setup → premier livrable)"
+      - "Estimation du temps pour onboarder un collaborateur"
+      - "Compatibilité LLMs précisée (Claude, GPT, Gemini — lesquels testés ?)"
+      - "Exemples de livrables réels (pas abstraits) : à quoi ressemble un chapitre produit ?"
+      - "Gestion des versions et du travail en équipe documentée"
+      - "Dépendances techniques listées avec versions exactes"
+    nice_to_have:
+      - "Comparatif AIDW vs alternatives (Notion AI, Confluence, etc.)"
+      - "Témoignages ou cas d'usage réels"
+      - "Guide d'adaptation pour un nouveau client/projet"
+      - "FAQ sur les cas limites (documents volumineux, équipe distribuée)"
+      - "Temps estimé par type de document"
+    deal_breakers:
+      - "Workflow incomplet (étapes manquantes entre deux phases)"
+      - "Aucun livrable exemple disponible (on ne sait pas ce qu'on va produire)"
+      - "Dépendances à un seul LLM ou outil propriétaire non remplaçable"
+      - "Pas de gestion du versionning ou du travail collaboratif"
+      - "Méthode non adaptable (trop rigide pour des contextes variés)"
+
+  criteria:
+    workflow_completeness:
+      weight: 0.35
+      measures:
+        - "end_to_end_documented"
+        - "onboarding_time_stated"
+        - "no_missing_steps"
+    team_adoptability:
+      weight: 0.35
+      measures:
+        - "llm_agnostic_confirmed"
+        - "version_control_covered"
+        - "adaptability_for_contexts"
+    roi_clarity:
+      weight: 0.30
+      measures:
+        - "output_examples_concrete"
+        - "time_investment_stated"
+        - "dependencies_manageable"
+
+  genre_specific:
+    role: "pro-adopter"
+    specialization: "methodology-evaluation"
+    experience_years: 8
+    references:
+      - "GitBook (workflow équipe, versionning)"
+      - "Notion (adaptabilité, onboarding rapide)"
+      - "Confluence (rigueur processus, cas d'usage équipe)"
+    scoring_philosophy: "pragmatique-roi"
+    focus: "adoptabilite-equipe"
+
+  scoring_calibration:
+    production_ready: "18-20/20 - Workflow A→Z, exemples livrables, LLM-agnostique confirmé, onboarding estimé"
+    good_with_minor_fixes: "15-17/20 - Workflow OK mais 1 phase sous-documentée, exemples présents"
+    usable_with_reservations: "12-14/20 - Workflow compréhensible mais gaps (onboarding flou, exemples abstraits)"
+    not_usable: "9-11/20 - Must-have manquant (workflow incomplet OU aucun exemple livrable)"
+    inadequate: "6-8/20 - Deal-breaker présent (dépendance LLM unique OU pas de versionning)"
+    unusable: "1-5/20 - Impossible à évaluer pour adoption équipe"
+
+    must_have_ceiling: "11/20 - Si 1+ must-have manquant"
+    deal_breaker_ceiling: "8/20 - Si 1+ deal-breaker présent"

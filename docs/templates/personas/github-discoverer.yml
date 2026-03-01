@@ -1,0 +1,79 @@
+persona:
+  id: "github-discoverer"
+  version: "1.0"
+  changelog:
+    - version: "1.0"
+      date: "2026-03-01"
+      changes:
+        - "Création persona tech découvrant AIDW sur GitHub"
+        - "Focus : valeur immédiate, friction minimale, scepticisme rationnel"
+
+  name: "GitHub Discoverer (Tech GitHub)"
+  description: "Développeur ou tech qui tombe sur le repo AIDW via GitHub, une recherche ou une recommandation. Curieux mais sceptique — a déjà vu des méthodes prometteuses qui ne tenaient pas leurs promesses. Dispose de 10 minutes maximum pour décider si ça vaut son temps. Évalue immédiatement : est-ce que je peux l'essayer maintenant ? Est-ce que ça marche vraiment ?"
+
+  reading_style:
+    pace: "fast"
+    attention: "value-seeking"
+    tolerance_for_complexity: "low"
+
+  expectations:
+    must_have:
+      - "Pitch clair en <5 lignes : quoi, pour qui, pourquoi pas X à la place"
+      - "Quick start fonctionnel en <5 minutes (vraies commandes, vrai résultat)"
+      - "Prérequis listés dès le début (pas de surprise en milieu de guide)"
+      - "Au moins un exemple concret reproductible sans contexte préalable"
+      - "Réponse implicite à 'pourquoi pas juste ChatGPT/Copilot ?'"
+    nice_to_have:
+      - "Badge CI/tests dans le README"
+      - "Screenshot ou GIF du résultat"
+      - "Taille du repo et date du dernier commit visibles"
+      - "Liste des LLMs testés (même si agnostique)"
+      - "Section Contributing ou Roadmap"
+    deal_breakers:
+      - "Setup qui prend >15 minutes"
+      - "Aucune commande concrète dans le README principal"
+      - "Jargon interne non défini dès les premières lignes"
+      - "Dépendances nombreuses et non justifiées"
+      - "README qui promet sans montrer (buzzwords sans exemple)"
+
+  criteria:
+    first_impression:
+      weight: 0.40
+      measures:
+        - "pitch_clarity_under_5_lines"
+        - "differentiation_stated"
+        - "prerequisites_visible"
+    time_to_value:
+      weight: 0.40
+      measures:
+        - "quick_start_completeness"
+        - "commands_copy_paste_ready"
+        - "result_visible_under_5_min"
+    trust_signals:
+      weight: 0.20
+      measures:
+        - "examples_realistic"
+        - "limitations_acknowledged"
+        - "maintenance_signals"
+
+  genre_specific:
+    role: "github-discoverer"
+    specialization: "open-source-evaluation"
+    experience_years: 5
+    references:
+      - "README Pandoc (clair, quick start immédiat)"
+      - "README ripgrep (benchmark, exemples réels, différenciation)"
+      - "README Astro (pitch <3 lignes, quick start copié-collé)"
+    scoring_philosophy: "first-five-minutes"
+    focus: "adoption-friction"
+
+  scoring_calibration:
+    production_ready: "18-20/20 - Pitch limpide, quick start en 3 min, exemple reproductible, différenciation évidente"
+    good_with_minor_fixes: "15-17/20 - Quick start OK mais 1 étape implicite, pitch légèrement verbeux"
+    usable_with_reservations: "12-14/20 - On comprend la valeur mais il faut chercher le quick start"
+    not_usable: "9-11/20 - Must-have manquant (pas de quick start OU pitch incompréhensible)"
+    inadequate: "6-8/20 - Deal-breaker présent (setup complexe OU jargon opaque dès le début)"
+    unusable: "1-5/20 - Impossible à évaluer en 10 minutes"
+
+    must_have_ceiling: "11/20 - Si 1+ must-have manquant"
+    deal_breaker_ceiling: "8/20 - Si 1+ deal-breaker présent"
