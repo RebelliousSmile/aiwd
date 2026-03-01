@@ -1,60 +1,68 @@
 # AIDW Collector
 
-A lightweight kit to drop into any project and extract structured information for AIDW documentation.
+Kit à copier dans un projet cible pour extraire toute l'information nécessaire à la documentation AIDW.
 
-## What it does
+## Ce que ça produit
 
-`client-extract` analyzes your project (code + existing docs) and produces a structured extraction report organized around AIDW's expected files:
+`client-extract` analyse le projet (code + docs existants) et produit des fichiers prêts à placer dans `<client>/.docs/` :
 
-- **[CLIENT.md]** — client/product context, audience, tone, constraints
-- **[glossaire.md]** — technical vocabulary found in the codebase and docs
-- **[overview.md]** — project purpose, scope, use cases
-- **[bank.yml]** — suggested AIDW configuration
+| Fichier | Contenu | Obligatoire |
+|---------|---------|-------------|
+| `CLIENT.md` | Contexte client, audience, ton, contraintes | Oui |
+| `glossaire.md` | Vocabulaire technique extrait du code | Oui |
+| `architecture.md` | Stack, modules, flux de données | Si projet tech |
+| `screens.md` | Inventaire des écrans (champs, actions, messages) | Si app UI |
+| `access-matrix.md` | Matrice rôles × fonctionnalités | Si auth/rôles |
+| `deployment.md` | Environnements, prérequis, procédure | Si déployable |
+| `INSTALL.md` | Commandes de déploiement + gaps identifiés | Toujours |
 
-The report is intermediate: a human or LLM then creates the actual AIDW files from it.
+## Utilisation
 
-## Usage
-
-### 1. Copy this folder to your project
+### 1. Copier ce dossier dans le projet cible
 
 ```bash
-cp -r aidw-collector/ /path/to/your/project/
+cp -r docs/aidw-collector/ /chemin/vers/cerascan/
 ```
 
-### 2. Fill in `collect.yml`
+### 2. Remplir `collect.yml`
 
-Edit `aidw-collector/collect.yml` with basic project information before running the prompt.
+```bash
+# Ouvrir et renseigner les champs :
+# project.name, project.type, client.name, client.audience
+# Désactiver les outputs non pertinents (ex: screens.md: false si pas d'UI)
+```
 
-### 3. Run the extraction prompt
+### 3. Lancer le prompt d'extraction
 
-With your LLM (any — Claude, GPT, Gemini, etc.):
+Avec n'importe quel LLM (Claude, GPT, Gemini…) ayant accès aux fichiers du projet :
 
 ```
 @aidw-collector/prompts/client-extract.prompt.md
 ```
 
-The prompt will analyze your project structure and existing docs, then produce `aidw-collector/output/extraction-report.md`.
+Le prompt analyse le projet et produit les fichiers dans `aidw-collector/dest/`.
 
-### 4. Use the report
+### 4. Déployer dans generationPDF
 
-Open `extraction-report.md` and use each section to create your AIDW files:
-
-```
-generationPDF/
-└── <client>/
-    ├── .docs/
-    │   ├── CLIENT.md       ← from [CLIENT.md] section
-    │   └── glossaire.md    ← from [glossaire.md] section
-    └── <projet>/
-        ├── bank.yml        ← from [bank.yml] section
-        └── overview.md     ← from [overview.md] section
+```bash
+# Copier dans <client>/.docs/ (depuis generationPDF/)
+cp cerascan/aidw-collector/dest/CLIENT.md        cerascan/.docs/
+cp cerascan/aidw-collector/dest/glossaire.md     cerascan/.docs/
+cp cerascan/aidw-collector/dest/architecture.md  cerascan/.docs/
+cp cerascan/aidw-collector/dest/screens.md       cerascan/.docs/
+cp cerascan/aidw-collector/dest/access-matrix.md cerascan/.docs/
+cp cerascan/aidw-collector/dest/deployment.md    cerascan/.docs/
 ```
 
-## Requirements
+Puis décommenter les entrées correspondantes dans `bank.yml → docs:`.
 
-- Any LLM with file access (Claude, GPT-4, Gemini, etc.)
-- No Python, no Pandoc required at this stage
+### 5. Prochaine étape AIDW
 
-## Output
+Rédiger `overview.md` (brief éditorial — ce que le document va couvrir),  
+puis lancer `@docs/prompts/workshop/generate-toc.prompt.md`.
 
-`aidw-collector/output/extraction-report.md` — structured report, ready to be transformed into AIDW files.
+## Prérequis
+
+- Un LLM avec accès aux fichiers du projet (Claude, GPT-4, Gemini…)
+- Aucun Python, aucun Pandoc requis à cette étape
+

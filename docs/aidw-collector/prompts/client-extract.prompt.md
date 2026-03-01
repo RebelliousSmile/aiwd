@@ -209,10 +209,6 @@ Pour chaque terme :
 
 ---
 
-## OUTPUT: Référentiel d'Extraction
-
-Créer `aidw-collector/output/extraction-report.md` avec les 7 blocs suivants :
-
 ## OUTPUT: Fichiers Individuels
 
 > **Principe :** chaque fichier produit correspond à une entrée dans `bank.yml → docs:`. Le rédacteur copie `aidw-collector/output/` dans `<client>/.docs/` et décommente les entrées correspondantes dans `bank.yml`.
@@ -341,57 +337,6 @@ Créer les fichiers suivants dans `aidw-collector/output/` :
 |---------|------|-------------|
 ```
 
-### Fichiers AIDW (prêts à placer dans le projet)
-
-**`output/overview.md`**
-```markdown
-# [Nom Projet]
-
-## Pitch
-[3-5 lignes]
-
-## Audience Cible
-[depuis CLIENT.md]
-
-## Prérequis
-[depuis architecture.md + deployment.md]
-
-## Périmètre
-[liste fonctionnalités in/out]
-
-## Use Cases
-1. [use case avec acteur et objectif]
-
-## Structure du Document [suggestion]
-- Chapitre 01 : [titre]
-```
-
-**`output/bank.yml`**
-```yaml
-document:
-  name: "[...]"
-  client: "[kebab-case]"
-  type: "[technical-doc|user-guide|api-doc|process-doc]"
-
-output-style:
-  global: "[client]/.output-styles/[suggestion].md"
-
-docs:
-  client: "[client]/.docs/CLIENT.md"
-  glossaire: "[client]/.docs/glossaire.md"
-  architecture: "[client]/.docs/architecture.md"
-  screens: "[client]/.docs/screens.md"         # décommenter si UI
-  access-matrix: "[client]/.docs/access-matrix.md"  # décommenter si auth
-  deployment: "[client]/.docs/deployment.md"
-
-toc:
-  fichier: ".toc/INDEX.md"
-
-icml:
-  chapitres-source: "chapitres/"
-  output: "output/[nom-kebab].icml"
-```
-
 ### Fichier de mapping
 
 **`output/INSTALL.md`** — instructions de déploiement du résultat
@@ -406,12 +351,12 @@ cp output/screens.md       generationPDF/<client>/.docs/       # si UI
 cp output/access-matrix.md generationPDF/<client>/.docs/       # si auth
 cp output/deployment.md    generationPDF/<client>/.docs/
 
-## Fichiers à placer dans le projet
-cp output/overview.md  generationPDF/<client>/<projet>/
-cp output/bank.yml     generationPDF/<client>/<projet>/
+## Déclarer dans bank.yml
+Décommenter les entrées correspondantes dans `<client>/<projet>/bank.yml → docs:`
 
 ## Prochaine étape AIDW
-@docs/prompts/workshop/generate-toc.prompt.md <client>/<projet>
+Rédiger `overview.md` du projet (brief éditorial — ce que le document va couvrir)
+puis lancer : `@docs/prompts/workshop/generate-toc.prompt.md`
 
 ## Sections [À COMPLÉTER]
 [liste des gaps identifiés pendant l'extraction]

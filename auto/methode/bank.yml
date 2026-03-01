@@ -10,6 +10,8 @@ output-style:
 docs:
   client: "auto/.docs/CLIENT.md"
   glossaire: "auto/.docs/glossaire.md"
+  architecture: "auto/.docs/architecture.md"
+  deployment: "auto/.docs/deployment.md"
 
 toc:
   fichier: ".toc/INDEX.md"

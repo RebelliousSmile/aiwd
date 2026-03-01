@@ -62,10 +62,8 @@ output:
   access-matrix.md: true           # → <client>/.docs/access-matrix.md (auth/rôles)
   deployment.md: true              # → <client>/.docs/deployment.md
 
-  # --- AIDW ---
-  overview.md: true                # → <client>/<projet>/overview.md
-  bank.yml: true                   # → <client>/<projet>/bank.yml       (config suggérée)
-  INSTALL.md: true                 # → aidw-collector/output/INSTALL.md (instructions)
+  # --- Mapping ---
+  INSTALL.md: true                 # → aidw-collector/dest/INSTALL.md (instructions + gaps)
 
   # Désactiver les fichiers non pertinents (ex: screens.md si pas d'UI)
   # screens.md: false
