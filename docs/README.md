@@ -9,7 +9,9 @@ Système de prompts interconnectés pour la génération de documentation techni
 ```mermaid
 flowchart TD
     subgraph Préparation
-        CLIENT[CLIENT.md + glossaire.md] --> BANK[bank.yml]
+        AIDW[aidw-collector] -->|CLIENT.md, glossaire.md,\nscreens.md, userflows.md...| DOCS[.docs/]
+        CE[client-extract] -->|depuis PDF/notes| DOCS
+        DOCS --> BANK[bank.yml]
         TF[tone-finder] --> BANK
     end
 
@@ -199,19 +201,43 @@ chapitres/ → build-icml → output/*.icml → InDesign → PDF
 
 ### Flux Client (Préparation)
 
-**Pour nouveau client :**
+**Option A — Via aidw-collector (recommandé si accès au code source) :**
+
+```bash
+# 1. Copier le kit aidw-collector dans le projet cible
+cp -r docs/aidw-collector/ /chemin/vers/mon-projet/
+
+# 2. Lancer l'agent (LLM avec accès aux fichiers du projet)
+@aidw-collector/aidw-collector.md
+# → Produit dans aidw-collector/dest/ :
+#   CLIENT.md, glossaire.md, architecture.md
+#   screens.md, userflows.md (si UI détectée)
+#   access-matrix.md (si auth/rôles)
+#   deployment.md (si infra configurée)
+
+# 3. Déployer les fichiers extraits
+# → Suivre les instructions dans aidw-collector/dest/INSTALL.md
+```
+
+**Option B — Via client-extract (si PDF, notes, captures sans code) :**
+
+```bash
+@docs/prompts/workshop/client-extract.prompt.md
+# → Produit dans <client>/.docs/
+#   CLIENT.md, glossaire.md (obligatoires)
+#   + fichiers conditionnels selon contenu disponible
+```
+
+**Après extraction :**
 
 1. Créer `<client>/.docs/CLIENT.md`
    - Contexte, audience cible, contraintes techniques
 
-2. Créer `<client>/.docs/glossaire.md`
-   - Termes métier, vocabulaire technique
-
-3. Adapter output-styles (optionnel)
+2. (Optionnel) Adapter output-styles
    - Copier depuis `docs/output-styles/`
    - Personnaliser selon charte graphique client
 
-4. Créer premier projet
+3. Créer premier projet
    - `<client>/<nom-projet>/`
    - Suivre Quick Start
 
@@ -517,7 +543,8 @@ docs:
 
 ---
 
-**Version:** 6.1  
-**Date:** 2026-02-28  
+**Version:** 6.2  
+**Date:** 2026-06-15  
 **Focus:** Documentation technique multi-clients, pipeline ICML/InDesign, personas techniques  
+**Changelog 6.2:** Intégration aidw-collector dans le flux de préparation client. Mermaid mis à jour (aidw-collector → DOCS). Flux Client Option A/B. Référence extract-userflows.
 **Changelog 6.1:** Refactoring complet README (suppression duplications, ajout Quick Start, arbre de décision, troubleshooting, section legacy séparée). 678 lignes → 420 lignes (-38%).

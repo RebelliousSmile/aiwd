@@ -69,10 +69,14 @@ Partagée entre tous les projets du client. Chargée automatiquement par les pro
 |---------|------|-------------|
 | `CLIENT.md` | Contexte client, audience cible, ton & style, contraintes | Oui |
 | `glossaire.md` | Termes métier, vocabulaire technique, acronymes | Oui |
+| `architecture.md` | Stack, modules, flux de données | Non (si doc technique) |
+| `screens.md` | Inventaire des écrans : champs, actions, messages d'erreur | Non (si UI détectée) |
+| `userflows.md` | Parcours utilisateurs — tâches cross-écrans, erreurs, résultats | Non (si UI + flux) |
+| `access-matrix.md` | Matrice rôles × fonctionnalités, accès conditionnels | Non (si auth/rôles) |
+| `deployment.md` | Environnements, variables, CI/CD, procédures de déploiement | Non (si infra configurée) |
 | `brand-guidelines.md` | Charte graphique, couleurs, typographie | Non |
-| `architecture.md` | Architecture système, stack technique | Non (si doc technique) |
 
-**Générés par :** `client-extract.prompt.md` ou complétés manuellement.
+**Générés par :** `aidw-collector` (depuis le code source) ou `client-extract.prompt.md` (depuis PDF/notes).
 
 ### `.output-styles/` — Styles d'écriture
 
@@ -215,8 +219,15 @@ Fichiers générés. La plupart ignorés par Git (sauf `releases/`).
 1. INITIALISATION
    init-project.prompt -> Structure + bank.yml
 
-2. EXTRACTION SOURCES (si PDF client)
-   client-extract.prompt -> <client>/.docs/CLIENT.md, glossaire.md
+2. EXTRACTION SOURCES
+   [Option A - code source accessible]
+   aidw-collector       -> <client>/.docs/CLIENT.md, glossaire.md, architecture.md
+                        -> <client>/.docs/screens.md, userflows.md (si UI)
+                        -> <client>/.docs/access-matrix.md (si auth)
+                        -> <client>/.docs/deployment.md (si infra)
+
+   [Option B - PDF, notes, captures]
+   client-extract.prompt -> <client>/.docs/CLIENT.md, glossaire.md, ...
    tone-finder.prompt    -> <client>/.output-styles/
 
 3. BRIEF

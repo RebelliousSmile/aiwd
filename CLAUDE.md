@@ -95,8 +95,22 @@ Flux de travail pour l'écriture structurée.
 ### Flux Principal (Documentation Technique)
 
 ```
-brainstorm → generate-toc → write-technical → doctor → build-icml
-                          → write-user-guide → doctor → build-icml
+[aidw-collector] → client-extract → brainstorm → generate-toc → write-technical → doctor → build-icml
+                                                               → write-user-guide → doctor → build-icml
+```
+
+**Étape 0 — Extraction sources (si accès code source) :**
+```bash
+# Copier aidw-collector dans le projet cible, puis :
+@aidw-collector/aidw-collector.md
+# → produit dest/ : CLIENT.md, glossaire.md, architecture.md, screens.md, userflows.md, access-matrix.md, deployment.md
+# → déployer selon INSTALL.md dans <client>/.docs/
+```
+
+**Étape 0bis — Extraction depuis PDFs/notes (si pas de code source) :**
+```bash
+@docs/prompts/workshop/client-extract.prompt.md --from-collector
+# ou avec sources brutes : --from-pdf, --from-notes, etc.
 ```
 
 **Pipeline complet (industrialisé) :**
@@ -266,35 +280,23 @@ python scripts/build-icml.py --project "<client>/<nom-projet>"
 
 ## Documentation Client
 
-Chaque client a sa documentation dans `<client>/.docs/`:
+Chaque client a sa documentation dans `<client>/.docs/`. Générée automatiquement par `aidw-collector` ou manuellement.
 
-- `CLIENT.md` - Infos client, tone, audience cible (obligatoire)
-- `glossaire.md` - Termes métier, vocabulaire technique (obligatoire)
-- `brand-guidelines.md` - Charte graphique, guidelines marque (optionnel)
-- `architecture.md` - Architecture système (si doc technique, optionnel)
+**Fichiers obligatoires :**
+- `CLIENT.md` — Infos client, tone, audience cible
+- `glossaire.md` — Termes métier, vocabulaire technique
 
-**Exemple CLIENT.md :**
-```markdown
-# Client: ACME Corporation
+**Fichiers conditionnels (si contenu disponible) :**
+- `architecture.md` — Stack, modules, flux de données
+- `screens.md` — Inventaire écrans (si UI détectée)
+- `userflows.md` — Parcours utilisateurs cross-écrans (si UI + sources de flux)
+- `access-matrix.md` — Matrice rôles × fonctionnalités (si auth/rôles détectés)
+- `deployment.md` — Environnements, variables, CI/CD (si config déploiement)
+- `brand-guidelines.md` — Charte graphique (optionnel, manuel)
 
-## Contexte
-Éditeur SaaS B2B, outils collaboration entreprise.
-
-## Audience Cible
-- **Primaire:** Développeurs intégrant l'API (niveau intermédiaire à expert)
-- **Secondaire:** Admins système configurant l'infrastructure
-
-## Ton & Style
-- Technique mais accessible
-- Éviter jargon marketing
-- Code examples prioritaires (show, don't tell)
-- Formats préférés: JSON, Python, cURL
-
-## Contraintes
-- Pas de credentials réelles dans exemples
-- Toujours documenter breaking changes
-- Rate limits obligatoires pour chaque endpoint
-```
+**Généré par :**
+- `aidw-collector` (depuis le code source du projet) — recommandé
+- `client-extract.prompt.md` (depuis PDFs, captures, notes) — si pas de code accessible
 
 ---
 
@@ -347,6 +349,14 @@ Chaque client a sa documentation dans `<client>/.docs/`:
 ---
 
 ## Ajout Nouveau Client
+
+### Option A — Via aidw-collector (recommandé si accès au code source)
+
+1. Copier `docs/aidw-collector/` dans le projet cible
+2. Lancer `@aidw-collector/aidw-collector.md` (LLM avec accès aux fichiers)
+3. Récupérer les fichiers produits dans `dest/` et suivre `INSTALL.md`
+
+### Option B — Manuellement
 
 1. Créer dossier: `<nouveau-client>/`
 2. Docs obligatoires:
@@ -443,8 +453,9 @@ python scripts/normalize-text.py <fichier>
 
 ---
 
-**Version:** 6.0
-**Date:** 2026-02-28
+**Version:** 6.1
+**Date:** 2026-06-15
+**Changelog 6.1:** Intégration aidw-collector v3.1 dans CLAUDE.md. 7 extracteurs + 7 templates. Ajout userflows.md (parcours utilisateurs). Flux principal mis à jour (Étape 0 collector). Documentation Client restructurée (obligatoires vs conditionnels). Ajout Nouveau Client : Option A collector / Option B manuel.
 **Changelog 6.0:** Adaptation pour documentation technique multi-clients. Nouveaux prompts (write-technical, write-user-guide, review-technical). Nouveaux output-styles (4 types docs). Nouveaux personas (technical-reviewer, clarity-expert, compliance-checker). Suppression git-sync, scripts itch.io. Philosophie unifiée : chapitre = unité PAO (contenu agnostique). Legacy JdR/romans supporté.
 **Changelog 5.0:** Migration vers pipeline unique ICML/InDesign. Suppression LaTeX (latex-partials/, main.tex, .sty, md-to-tex, build-pdf, export-sty-specs). Pipeline unique : chapitres/*.md → build-icml.py → .icml → InDesign → PDF HD.
 **Changelog 4.0:** Mode --feedback pour write-novel/write-roleplaying (réécriture informée depuis TOC + feedback personas). review-pipeline v4.0 (triage doctor vs rewrite). Pipeline review documenté dans Flux Principal.
