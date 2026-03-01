@@ -89,6 +89,7 @@ Décider quels extracteurs lancer selon la détection :
 | `extract-glossaire` | `dest/glossaire.md` | Toujours |
 | `extract-architecture` | `dest/architecture.md` | Toujours |
 | `extract-screens` | `dest/screens.md` | UI = oui |
+| `extract-userflows` | `dest/userflows.md` | UI = oui |
 | `extract-access` | `dest/access-matrix.md` | Auth = oui |
 | `extract-deployment` | `dest/deployment.md` | Déploiement = oui |
 
@@ -133,6 +134,7 @@ Produire `dest/INSTALL.md` avec le contenu suivant :
 | glossaire.md | `<client>/.docs/` | complet |
 | architecture.md | `<client>/.docs/` | complet |
 | [si UI] screens.md | `<client>/.docs/` | complet |
+| [si UI] userflows.md | `<client>/.docs/` | complet |
 | [si auth] access-matrix.md | `<client>/.docs/` | complet |
 | [si déploiement] deployment.md | `<client>/.docs/` | complet |
 
