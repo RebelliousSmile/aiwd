@@ -1,249 +1,209 @@
-# Workshop: Writing Prompts System
+# Workshop: Système de Prompts Documentation
 
-Système de prompts interconnectés pour l'écriture de documents narratifs et JdR.
+Système de prompts interconnectés pour la création de documentation technique multi-clients.
 
-## Vue d'Ensemble
+## Pipeline Principal
 
 ```
-                    ┌─────────────┐
-                    │  research   │
-                    └──────┬──────┘
-                           │
-                           ▼
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  write-toc  │────▶│  evaluate   │────▶│ write-novel │
-└─────────────┘     └─────────────┘     └──────┬──────┘
-                           │                    │
-                           │                    ▼
-                           │            ┌──────────────────┐
-                           │            │  review-chapter  │
-                           │            └────────┬─────────┘
-                           │                     │
-                           ▼                     ▼
-                    ┌─────────────────┐   ┌─────────────┐
-                    │write-roleplaying│   │   doctor    │
-                    └────────┬────────┘   └─────────────┘
-                             │                   ▲
-                             ▼                   │
-                    ┌─────────────────┐          │
-                    │ review-roleplay │──────────┘
-                    └─────────────────┘
+init-project
+     │
+     ▼
+brainstorm ──→ generate-toc
+                    │
+                    ▼
+            write-toc-chapter ──→ comment (relecture TOC)
+                    │
+                    ▼
+         write-technical / write-user-guide
+                    │
+                    ▼
+            review-technical
+                    │
+                    ▼
+                comment (personas)
+                    │
+                    ├── Patchable ──→ doctor ──→ build-icml.py
+                    └── Structurel ──→ write-technical --feedback
 ```
 
-## Flux de Travail
+## Prompts Disponibles
 
-### Flux Principal (Sérialisé)
+### Initialisation & Configuration
 
-1. **research** → Recherche et documentation
-2. **evaluate** → Évaluation du projet
-3. **write-toc** → Création du sommaire
-4. **write-novel** OU **write-roleplaying** → Rédaction
-5. **review-chapter** OU **review-roleplay** → Revue
-6. **doctor** → Analyse persona
+| Prompt | Rôle | Entrée | Sortie |
+|--------|------|--------|--------|
+| `init-project` | Audite et initialise l'arborescence d'un projet | `<client>/<projet>` | Structure complète + bank.yml |
+| `client-extract` | Extrait sources brutes → fichiers thématiques client | `<client> [options]` | CLIENT.md, glossaire.md, … |
+| `tone-finder` | Génère un output-style depuis des sources | `<client> [sources]` | `<client>-<type>.md` |
+| `generate-persona` | Crée une définition de persona | Description lecteur | `<id>.yml` |
+| `persona-trainer` | Affine une persona depuis des feedbacks | `<id> --feedback-files` | `<id>.yml` mis à jour |
 
-### Flux Extraction (Multi-Session)
+### Conception
+
+| Prompt | Rôle | Entrée | Sortie |
+|--------|------|--------|--------|
+| `brainstorm` | Itère sur l'overview jusqu'à generate-toc | `<client>/<projet>` | overview.md enrichi |
+| `generate-toc` | Génère l'INDEX.md et la structure chapitres | overview.md | `.toc/INDEX.md` |
+| `write-toc-chapter` | Écrit le plan détaillé d'un chapitre | Numéro chapitre | `.toc/toc-chapterNN.md` |
+
+### Rédaction
+
+| Prompt | Rôle | Entrée | Sortie |
+|--------|------|--------|--------|
+| `write-technical` | Rédige un chapitre documentation technique | N [--feedback] | `chapitres/chapitreNN.md` |
+| `write-user-guide` | Rédige un chapitre guide utilisateur | N [--feedback] | `chapitres/chapitreNN.md` |
+| `add-text` | Ajoute du contenu à un chapitre existant | Chapitre + contenu | Chapitre enrichi |
+
+### Review & Qualité
+
+| Prompt | Rôle | Entrée | Sortie |
+|--------|------|--------|--------|
+| `review-technical` | Revue technique d'un chapitre (précision, cohérence) | `chapitreNN.md` | Rapport review |
+| `comment` | Évaluation par personas (3 lecteurs) | `chapitreNN.md` | `.wip/comments/` |
+| `doctor` | Corrections chirurgicales ciblées | `chapitreNN.md` | Chapitre corrigé + changelog |
+
+### Utilitaires
+
+| Prompt | Rôle | Entrée | Sortie |
+|--------|------|--------|--------|
+| `research` | Recherche documentaire sur un sujet | Sujet entre guillemets | Rapport recherche |
+| `upgrade` | Auto-évaluation itérative d'un prompt | Résultat à améliorer | Version améliorée |
+| `tabula-rasa` | Repart de zéro sur un projet | `<client>/<projet>` | Projet réinitialisé |
+
+### Extraction PDF (Multi-Session)
 
 Pour importer du contenu depuis un PDF source :
 
 ```
 extract (Session 1)     → Setup + Split PDF
-    ↓
-extract-chunk (×N)      → 1 chunk par session
-    ↓
+    │
+extract-chunk (× N)     → 1 chunk par session parallèle
+    │
 extract-distribute      → Fusion + Distribution + Cleanup
+    │
+extract-debug           → Diagnostique si problème
 ```
 
 Stockage intermédiaire : `docs/extraction/<source-name>/`
 
-### Flux Alternatifs
+## Ressources Chargées depuis bank.yml
 
-| Point d'Entrée | Cas d'Usage |
-|----------------|-------------|
-| `research` | Nouveau sujet à documenter |
-| `evaluate` | Projet existant à analyser |
-| `write-toc` | Structure à créer |
-| `write-novel` | Chapitre spécifique à rédiger |
-| `review-*` | Texte existant à réviser |
-| `doctor` | Analyse qualitative seule |
-
-## Prompts Disponibles
-
-| Prompt | Rôle | Entrée | Sortie |
-|--------|------|--------|--------|
-| `evaluate` | Évalue un projet, détermine le type | bank.yml | Route vers write-* |
-| `write-toc` | Crée le sommaire détaillé | Brief projet | toc.md |
-| `write-novel` | Écrit du contenu narratif | Numéro chapitre | chapitre.tex |
-| `write-roleplaying` | Écrit du contenu JdR | Numéro chapitre | chapitre.tex |
-| `research` | Recherche croisée web | Sujet | Rapport recherche |
-| `review-chapter` | Vérifie conformité narrative | chapitre.tex | Rapport review |
-| `review-roleplay` | Vérifie conformité JdR + règles | chapitre.tex | Rapport review |
-| `doctor` | Analyse par personas | chapitre.tex | Rapport persona |
-| `generate-persona` | Crée définition persona | Description lecteur | persona.yml |
-| `extract` | Setup extraction PDF (Session 1) | projet + PDF | progress.md + chunks |
-| `extract-chunk` | Extrait 1 chunk (Sessions 2-N) | progress.md | classified/*.md |
-| `extract-distribute` | Fusionne et distribue (Final) | progress.md | Fichiers univers |
-| `extract-debug` | Diagnostique les problèmes | progress.md | Rapport debug |
-
-## Ressources Requises
-
-Chaque prompt charge ses ressources depuis `bank.yml` :
-
-| Ressource | Localisation | Utilisée Par |
+| Ressource | Localisation | Utilisée par |
 |-----------|--------------|--------------|
-| output-style | `<univers>/.output-styles/` | Tous |
-| docs | `<univers>/.docs/` | Tous |
-| toc | `toc.md` (projet) | write-*, review-* |
-| templates | `<univers>/.templates/` | write-* |
-| rules-files | `docs/rules-files/` | write-roleplaying, review-roleplay |
-| personas | `docs/templates/personas/` ou `<univers>/.templates/personas/` | doctor, comment |
+| `output-style` | `<client>/.output-styles/` | Tous les write-* |
+| `docs.client` | `<client>/.docs/CLIENT.md` | write-*, review-*, comment |
+| `docs.glossaire` | `<client>/.docs/glossaire.md` | write-*, review-*, comment |
+| `toc` | `.toc/INDEX.md` | write-*, review-technical |
+| `personas` | `<client>/.templates/personas/` ou `docs/templates/personas/` | comment, doctor |
 
-## Configuration: bank.yml
-
-Chaque projet doit avoir un `bank.yml` à sa racine :
+## Configuration : bank.yml
 
 ```yaml
 document:
-  name: "Mon Projet"
-  univers: "archipels"
-  type: "novel"  # ou "roleplaying"
+  name: "Guide Utilisateur API"
+  client: "acme-corp"
+  type: "user-guide"  # technical-doc | user-guide | api-doc | process-doc
 
 output-style:
-  global: "archipels/.output-styles/latex-archipels.md"
+  global: "acme-corp/.output-styles/acme-corp-user-guide.md"
 
 docs:
-  univers: "archipels/.docs/UNIVERS.md"
-  terminologie: "archipels/.docs/terminologie.md"
+  client: "acme-corp/.docs/CLIENT.md"
+  glossaire: "acme-corp/.docs/glossaire.md"
 
 toc:
-  fichier: "toc.md"
+  fichier: ".toc/INDEX.md"
 
-templates:
-  package: "archipels/.templates/archipels.sty"
+personas:
+  global:
+    - "docs/templates/personas/technical-reviewer.yml"
+  client:
+    - "acme-corp/.templates/personas/clarity-expert.yml"
+  projet: []
+
+overview: "overview.md"
+
+icml:
+  chapitres-source: "chapitres/"
+  chapitres-order: []
+  output: "output/guide-utilisateur-api.icml"
 ```
 
 Voir `docs/templates/bank.yml` pour le template complet.
 
-## Transitions Entre Prompts
-
-### evaluate → write-*
-
-```
-Type détecté = novel → write-novel
-Type détecté = roleplaying/scenario → write-roleplaying
-```
-
-### research → evaluate
-
-```
-Rapport recherche généré → Re-évaluation avec nouvelles infos
-```
-
-### write-* → review-*
-
-```
-write-novel → review-chapter
-write-roleplaying → review-roleplay
-```
-
-### review-* → doctor
-
-```
-Rating A ou B → doctor
-Rating C → Fixes puis re-review
-Rating D/F → Re-write
-```
-
-### write-toc → write-*
-
-```
-TOC approuvé + type novel → write-novel
-TOC approuvé + type roleplaying → write-roleplaying
-```
-
 ## Utilisation
 
-### Démarrer un Nouveau Projet
+### Nouveau projet
 
 ```bash
-# 1. Créer bank.yml
-cp docs/templates/bank.yml <projet>/bank.yml
-# Éditer avec les valeurs du projet
+# Initialiser
+@docs/prompts/workshop/init-project.prompt.md acme-corp/mon-projet
 
-# 2. Évaluer le projet
-@docs/prompts/workshop/evaluate.prompt.md <projet>
+# Brainstormer l'overview
+@docs/prompts/workshop/brainstorm.prompt.md acme-corp/mon-projet
 
-# 3. Créer le sommaire
-@docs/prompts/workshop/write-toc.prompt.md <projet>
-
-# 4. Rédiger les chapitres
-@docs/prompts/workshop/write-novel.prompt.md 1
-@docs/prompts/workshop/write-novel.prompt.md 2
-# etc.
+# Générer la table des matières
+@docs/prompts/workshop/generate-toc.prompt.md acme-corp/mon-projet
 ```
 
-### Réviser un Chapitre Existant
+### Pipeline chapitre (industrialisé)
 
 ```bash
-# Review technique
-@docs/prompts/workshop/review-chapter.prompt.md chapitre03.tex
+# 1. Plan détaillé du chapitre
+@docs/prompts/workshop/write-toc-chapter.prompt.md 3
 
-# Analyse persona
-@docs/prompts/workshop/doctor.prompt.md chapitre03.tex
+# 2. Écriture
+@docs/prompts/workshop/write-technical.prompt.md 3
+
+# 3. Revue technique
+@docs/prompts/workshop/review-technical.prompt.md chapitre03.md
+
+# 4. Commentaires personas
+@docs/prompts/workshop/comment.prompt.md chapitres/chapitre03.md
+
+# 5a. Corrections patchables
+@docs/prompts/workshop/doctor.prompt.md chapitre03.md
+
+# 5b. Réécriture si feedback structurel
+@docs/prompts/workshop/write-technical.prompt.md 3 --feedback .wip/comments/chapitre03-comment.md
 ```
 
-### Recherche Documentaire
+### Extraction depuis PDF
 
 ```bash
-# Rechercher un sujet
-@docs/prompts/workshop/research.prompt.md "histoire des navigateurs archipels"
+# Extraire des sources client
+@docs/prompts/workshop/client-extract.prompt.md acme-corp
 
-# Intégrer les résultats
-@docs/prompts/workshop/evaluate.prompt.md <projet>
+# Ou extraction manuelle depuis PDF (multi-session)
+@docs/prompts/workshop/extract.prompt.md acme-corp sources/document.pdf
 ```
 
-## Personas (pour doctor.prompt.md)
+## Personas Disponibles
 
 Hiérarchie de chargement :
-1. `<projet>/.templates/personas/` (surcharge projet)
-2. `<univers>/.templates/personas/` (défaut univers)
-3. `docs/templates/personas/` (défaut global)
+1. `.templates/personas/` (projet — surcharge)
+2. `<client>/.templates/personas/` (client)
+3. `docs/templates/personas/` (global)
 
-| Persona | Pour | Focus |
-|---------|------|-------|
-| `casual-reader` | Roman | Divertissement, fluidité |
-| `lore-enthusiast` | Roman/Guide | Worldbuilding, cohérence |
-| `gm-practitioner` | JdR | Utilisabilité, instructions |
-| `player-immersive` | JdR | Atmosphère, immersion |
-| `editor-critical` | Tous | Qualité, style |
-| `speedreader` | Tous | Rythme, efficacité |
+### Personas Documentation Technique (défaut)
 
-Personas spécifiques par univers (exemples) :
-- Archipels : `marin-veteran`, `explorateur-curieux`
-- WoT : `fan-canonique`, `novice-univers`
+| Persona | Focus | Sévérité |
+|---------|-------|----------|
+| `technical-reviewer` | Exactitude technique, sécurité, cohérence architecture | Stricte |
+| `clarity-expert` | Compréhensibilité, accessibilité, jargon | Modérée |
+| `compliance-checker` | Exhaustivité, conformité style, traçabilité TOC | Stricte |
 
 ## Rapports Générés
 
 | Prompt | Rapport | Localisation |
 |--------|---------|--------------|
-| research | Rapport recherche | `docs/research/<date>-<sujet>.md` |
-| evaluate | Rapport évaluation | Console (non sauvegardé) |
-| write-toc | Table des matières | `toc.md` |
-| review-* | Rapport review | Console (non sauvegardé) |
-| doctor | Rapport persona | Console (non sauvegardé) |
+| `review-technical` | Rapport review | `.wip/reports/` |
+| `comment` | Évaluations personas | `.wip/comments/` |
+| `doctor` | Changelog corrections | `.wip/changelog/` |
+| `tone-finder` | Rapport style | `.wip/reports/` |
+| `research` | Rapport recherche | `docs/research/` |
 
-## Comparaison avec AIDD
+---
 
-| AIDD (Code) | Workshop (Écriture) |
-|-------------|---------------------|
-| elaborate | evaluate |
-| plan | write-toc |
-| implement | write-novel / write-roleplaying |
-| review_functional | review-chapter / review-roleplay |
-| - | doctor (nouveau) |
-| research | research (adapté) |
-
-## Version
-
-**Version:** 1.0
-**Date:** 2025-01-30
-**Auteur:** Généré par Claude Code
+**Version:** 2.0
+**Date:** 2026-03-01
